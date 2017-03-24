@@ -49,5 +49,12 @@ GetDiseaseClinicalSignsNoLang :  {disease :
 
 
 {disease: {id: "3297", OrphaNumber: 6, Name: {lang: "en", text: "Isolated 3-methylcrotonyl-CoA carboxylase deficiency"}}, clinicalSign: {id: "33100", Name: {lang: "en", text: "Respiratory distress/dyspnea/respiratory failure/lung volume reduction"}}, data: {signFreq: {id: "652", Name: {lang: "en", text: "Occasional"}}}} 
+
+
+
+
+
 ID correspond à l’identifiant OMIM
 Chaque entrée est un JSON
+
+
