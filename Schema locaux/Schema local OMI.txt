@@ -1,0 +1,65 @@
+OMI_onto.csv :
+
+Colonne 1 : L'id de la classe avec en prefixe l'adresse "http://purl.bioontology.org/ontology/OMIM/"
+Colonne 2 : Nom du Gene/Maladie Genetique (A revoir)
+Colonne 3 : Un synonyme (présence non obligatoire)
+Colonne 4 : Definition, toujours vide ?
+Colonne 5 : Obsolete? prend un boolean en entrée (et presque que des false)
+Colonne 6 : CUI : ID CUI =>utile pour mettre en relation avec d'autres bases
+Colonne 7 : Types semantics, permet d'obtenir l'id TUI en enlevant le prefixe "http://purl.bioontology.org/ontology/STY/"
+Colonne 8 : Parents, la classe parent à celle du type semantics (à vérifier car pas clair)
+
+OMI.txt :
+Structure :
+
+*RECORD*
+*FIELD* NO
+numero id OMIM
+*FIELD* TI
+numero_id_OMIM nom du gene/maladie comme la colonne 2 du csv, puis après, sérarés par des points-virgules les synonymes
+Si * devant numero_id_OMIM =>gene
+Si # devant numero_id_OMIM =>entree descriptive (souvent phenotype) et ne represente pas un unique lieu?(locus)
+Si + devant numero_id_OMIM =>entree contient description gène d'une sequence connue et un phenotype
+Si % devant numero_id_OMIM =>entree decrit un mendelian phenotype où la molecule sous-jacente n'est pas connue
+Si ^ devant numero_id_OMIM => entree n'existe plus car supprimée ou déplacée vers une autre entrée qui est indiquée
+Si rien devant numero_id_OMIM => entree decrit phenotype et suspectée d'être relié à une base mendelienne mais pas établit
+*FIELD* TX
+DESCRIPTION
+...
+CLINICAL FEATURES
+...
+INHERITANCE
+...
+POPULATION GENETICS
+...
+MAPPING
+...
+CYTOGENETICS
+...
+MOLECULAR GENETICS
+...
+*FIELD* SA
+
+*FIELD* RF
+Les references ? Listées par blocs numérotées
+*FIELD* CS
+Signes et Symptomes  TRES IMPORTANT!!
+INHERITANCE:
+...
+HEAD AND NECK:
+...
+MISCELLANEOUS:
+...
+*FIELD* CN
+un nom + "revised" + date
+*FIELD* CD
+nom+date
+*FIELD* ED
+noms + dates
+*FIELD* CN
+noms + "updated"+date
+*FIELD* CD
+nom+date
+*FIELD* ED
+noms + dates
+
