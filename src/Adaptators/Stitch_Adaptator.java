@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -27,6 +28,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -39,13 +41,19 @@ public class Stitch_Adaptator {
 	
 	public static void main(String[] args) throws Exception {
 		//testReadATC();
-		new Stitch_Adaptator();
+		
+		ArrayList<String> ids_CUI=new ArrayList<String>();
+		ids_CUI.add("00000085");
+		ids_CUI.add("00001775");
+		ids_CUI.add("00001972");
+		ids_CUI.add("05280965");
+		
+		new Stitch_Adaptator().getId_Atc(ids_CUI,true,true);
 		SearchElement("index_stitch","atc_code","alias");
 		
 	}
 	
 	public Stitch_Adaptator(){
-		//CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
 		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
 
 	}
@@ -217,6 +225,54 @@ public class Stitch_Adaptator {
 		  }
 		  System.out.println(eltcount + " elements ont Ã©tÃ© ajoutÃ© Ã  l'index ");
 	  }
+	
+	/**
+	 * Permet d'obtenir la liste des id_atc des medicament correspondants aux id_CUI donnés en entrée
+	 * les deux boolean permettent de definir sur quels champs on effectue la recherche:
+	 *  le chemical, l'alias ou les 2
+	 * @param ids_atc
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public ArrayList<String> getId_Atc(ArrayList<String> id_CUI,boolean chemical,boolean alias) throws IOException, ParseException{
+		ArrayList<String> labels=new ArrayList<String>();
+		
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_stitch")));
+	    IndexSearcher searcher = new IndexSearcher(reader);
+	    Analyzer analyzer = new StandardAnalyzer();
+	    
+	    String field;
+	    if (alias){
+	    	field="alias";
+	    	labels=getId_Atc(id_CUI,chemical,false);
+	    } else if(chemical){
+	    	field="chemical";
+	    } else{
+	    	return null;
+	    }
+	    QueryParser parser = new QueryParser(field, analyzer);
+	    
+	    BufferedReader in = null;
+	    for (int j=0;j<id_CUI.size();j++){
+		    String line = id_CUI.get(j);
+	
+		    //line = line.trim();
+		    Query query = parser.parse(line);
+		    
+		    TopDocs results = searcher.search(query, 1000);
+		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entrée :"+query);
+		    ScoreDoc[] hits = results.scoreDocs;
+		    for (int i=0;i<results.totalHits;i++){
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	labels.add(doc.get("atc_code"));
+		    	//System.out.println(doc.get("id_atc"));
+		    	System.out.println(doc.get("atc_code"));
+		    }
+	    }
+		return labels;
+	}
+	
 	
 	private static void SearchElement(String indexPath, String Searchfield,String idField) throws Exception {
 

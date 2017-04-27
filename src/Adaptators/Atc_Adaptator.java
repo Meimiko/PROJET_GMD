@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -26,6 +27,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -38,9 +40,18 @@ public class Atc_Adaptator {
 	
 	public static void main(String[] args) throws Exception {
 		//testSider();
-		new Atc_Adaptator();
-		SearchElement("index_atc","label","id_atc");
+		//SearchElement("index_atc","label","id_atc");
 		
+		ArrayList<String> ids_atc=new ArrayList<String>();
+		ids_atc.add("A01AA01");
+		ids_atc.add("A01AA02");
+		ids_atc.add("A01AA03");
+		ids_atc.add("A01AA04");
+		ids_atc.add("A01AA30");
+		ids_atc.add("V10XX02");
+		ids_atc.add("V10XX03");
+		
+		new Atc_Adaptator().getLabel(ids_atc);
 		
 	}
 	
@@ -183,6 +194,43 @@ public class Atc_Adaptator {
 		  System.out.println(eltcount + " elements ont été ajouté à l'index ");
 	  }
 	
+	/**
+	 * Permet d'obtenir la liste des labels des medicament correspondants aux id_atc donn�s en entr�e
+	 * @param ids_atc
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public ArrayList<String> getLabel(ArrayList<String> ids_atc) throws IOException, ParseException{
+		ArrayList<String> labels=new ArrayList<String>();
+		
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_atc")));
+	    IndexSearcher searcher = new IndexSearcher(reader);
+	    Analyzer analyzer = new StandardAnalyzer();
+	    QueryParser parser = new QueryParser("id_atc", analyzer);
+	    
+	    BufferedReader in = null;
+	    for (int j=0;j<ids_atc.size();j++){
+		    String line = ids_atc.get(j);
+	
+		    //line = line.trim();
+		    Query query = parser.parse(line);
+		    
+		    TopDocs results = searcher.search(query, 1000);
+		    //System.out.println("Nombre de resultat :"+results.totalHits);
+		    ScoreDoc[] hits = results.scoreDocs;
+		    for (int i=0;i<results.totalHits;i++){
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	labels.add(doc.get("label"));
+		    	//System.out.println(doc.get("id_atc"));
+		    	System.out.println(doc.get("label"));
+		    }
+	    }
+		return labels;
+	}
+	
+	
+	//Plus trop utile maintenant...
 	private static void SearchElement(String indexPath, String Searchfield,String idField) throws Exception {
 
 	    String index = indexPath;
