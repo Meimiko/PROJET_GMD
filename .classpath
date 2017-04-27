@@ -2,5 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jar/lucene-analyzers-common-6.4.1.jar"/>
+	<classpathentry kind="lib" path="jar/lucene-core-6.4.1.jar"/>
+	<classpathentry kind="lib" path="jar/lucene-demo-6.4.1.jar"/>
+	<classpathentry kind="lib" path="jar/lucene-queryparser-6.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
