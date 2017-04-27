@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -36,61 +34,68 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class OMIM_Adaptator {
+public class Atc_Adaptator {
 	
 	public static void main(String[] args) throws Exception {
-		OMIM_Adaptator omim= new OMIM_Adaptator();
-		omim.SearchIntoCSV("synonyms");
+		//testSider();
+		new Atc_Adaptator();
+		SearchElement("index_atc","label","id_atc");
 		
 		
-		/*String test="http://purl.bioontology.org/ontology/OMIM/602076,\"TRANSIENT RECEPTOR POTENTIAL CATION CHANNEL, SUBFAMILY V, MEMBER 1\",VR1|VANILLOID RECEPTOR 1|CAPSAICIN RECEPTOR|TRPV1,,false,C1421467,http://purl.bioontology.org/ontology/STY/T028,";
-		Scanner scan=new Scanner(test);
-		scan.useDelimiter(",");
-		String content="";
-		String content2="";
-		scan.next();
-		if ((content=scan.next()).contains("\"")){
-			while(!(content2=scan.next()).contains("\"")){
-				content=content+content2;
+	}
+	
+	
+	public Atc_Adaptator(){
+		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/atc/br08303.keg","index_atc");
+	}
+	
+	public static void testSider() throws IOException{
+		BufferedReader flotFiltre;
+		String filtre;
+		flotFiltre = new BufferedReader(new FileReader("sider.txt"));
+		filtre=flotFiltre.readLine();
+		BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testSider.txt")));
+		int cmpt=0;
+		String buff="";
+		while(filtre!=null){
+			if (filtre.startsWith("CID1")){
+				if (!filtre.substring(4,13).equals(buff))
+					cmpt++;
+				buff=filtre.substring(4,13);
 			}
-			content=content+content2;
+			filtre=flotFiltre.readLine();
 		}
-		System.out.println(content);
-		System.out.println(content2);*/
-			
-	
-	}
-	
-	/**
-	 * Constructeur qui lors de son initialisation, créer les index de omim csv et omim txt
-	 * Il suffit alors d'appeler les autres fonctions pour effectuer les recherches
-	 * @throws IOException
-	 */
-	public OMIM_Adaptator() throws IOException{
-		CreateIndex("omim.txt","index_omim_txt");
-		CreateIndex("omim_onto.csv","index_omim_csv");
+		System.out.println(cmpt);
 		
 	}
 	
-	public void SearchIntoCSV(String queryField){
-		try {
-			SearchElement("index_omim_csv",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	//NB : ATC 3386 elements dans les 3386 premieres lignes
+		public static void testReadATC() throws IOException{
+			BufferedReader flotFiltre;
+			String filtre;
+			flotFiltre = new BufferedReader(new FileReader("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/atc/br08303.keg"));
+			filtre=flotFiltre.readLine();
+			BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testAtc.keg")));
+			int cmpt=0;
+			String buff="";
+			while(filtre !=null){
+				if (filtre.startsWith("E")){
+					cmpt++;
+					if (buff.equals(filtre.substring(11, 17))){
+						System.out.println("duplicate"+cmpt);
+					}
+					buff=filtre.substring(11, 17);
+					flot.write(buff+"\n");
+				}
+				filtre=flotFiltre.readLine();
+			}
+			System.out.println(cmpt);
+			flot.close();
+			flotFiltre.close();
+			
 		}
-	}
 	
-	public void SearchIntoTXT(String queryField){
-		try {
-			SearchElement("index_omim_txt",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
- 	private static void CreateIndex(String docsPath,String indexPath) {
+	private static void CreateIndex(String docsPath,String indexPath) {
 	    boolean create = true;
 
 	    final Path docDir = Paths.get(docsPath);
@@ -126,10 +131,7 @@ public class OMIM_Adaptator {
 	      IndexWriter writer = new IndexWriter(dir, iwc);
 	      
 	      //indexDocs(writer, docDir);
-	      if (docsPath.endsWith("txt"))
-	    	  indexDocTxt(writer, new File(docDir.toString()));
-	      else if (docsPath.endsWith("csv"))
-	    	  indexDocCsv(writer, new File(docDir.toString()));
+	      indexDoc(writer, new File(docDir.toString()));
 	    	  
 
 	      // NOTE: if you want to maximize search performance,
@@ -151,7 +153,7 @@ public class OMIM_Adaptator {
 	    }
 	  }
 	
-	private static void indexDocTxt(IndexWriter writer, File file) throws IOException {
+	private static void indexDoc(IndexWriter writer, File file) throws IOException {
 		  int eltcount = 0;
 		  if (file.canRead() && !file.isDirectory()){
 			  try{
@@ -163,76 +165,15 @@ public class OMIM_Adaptator {
 				  line=br.readLine();
 
 				  while ((line=br.readLine())!=null ){
-					  if (line.equals("*FIELD* NO")){
+					  if (line.startsWith("E")){
 						  doc = new Document();
 						  eltcount++;
-						  line=br.readLine();
-						  doc.add(new TextField("id_omim", line,Field.Store.YES));//Ã  changer pour ne pas l'indexer
-					  } else if (line.startsWith("*FIELD* TI")){
-						  line=br.readLine();
-						  doc.add(new TextField("name/synonyms",line, Field.Store.YES));
-					  } else if (line.startsWith("*FIELD* CS")){
-						  line=br.readLine();
-						  String content=line;
-						  while (!(line=br.readLine()).startsWith("*FIELD*")){
-							  content=content + "\n" + line;
-						  }
-						  doc.add(new TextField("Symptoms",content, Field.Store.YES));
-					  } else if (line.startsWith("*RECORD*") ||line.startsWith("*THEEND*")){
+						  String id_atc=line.substring(9, 16);
+						  String label=line.substring(17);
+						  doc.add(new TextField("id_atc", id_atc, Field.Store.YES));
+						  doc.add(new TextField("label", label, Field.Store.YES));
 						  writer.addDocument(doc);
 					  }
-				  }
-				  br.close();
-			  } catch (Exception e){
-				  System.out.println(e.toString());
-			  }
-		  }
-		  System.out.println(eltcount + " elements ont Ã©tÃ© ajoutÃ© Ã  l'index ");
-	  }
-
-	private static void indexDocCsv(IndexWriter writer, File file) throws IOException {
-		  int eltcount = 0;
-		  if (file.canRead() && !file.isDirectory()){
-			  try{
-				  InputStream ips = new FileInputStream(file);
-				  InputStreamReader ipsr = new InputStreamReader(ips);
-				  BufferedReader br = new BufferedReader(ipsr);
-				  String line;
-				  Document doc=null;
-				  line=br.readLine();
-
-				  while ((line=br.readLine())!=null ){
-					  Scanner scanner=new Scanner(line);
-					  //String cursor=scanner.next();
-					  scanner.useDelimiter(",");
-					  
-					  doc = new Document();
-					  eltcount++;
-					  doc.add(new TextField("id_omim", scanner.next().substring(42), Field.Store.YES));
-					  String content="";
-					  String content2="";
-					  if ((content=scanner.next()).contains("\"") && !content.substring(1).contains("\"")){
-						  while(!(content2=scanner.next()).contains("\"")){
-							  content=content+content2;
-						  }
-						  content=content+content2;
-					  }
-					  doc.add(new TextField("name",content, Field.Store.YES));
-					  
-					  content="";
-					  content2="";
-					  if ((content=scanner.next()).contains("\"") && !content.substring(1).contains("\"")){
-						  while(!(content2=scanner.next()).contains("\"")){
-							  content=content+content2;
-						  }
-						  content=content+content2;
-					  }
-					  doc.add(new TextField("synonyms",content, Field.Store.YES));
-					  scanner.next();
-					  scanner.next();
-					  doc.add(new TextField("id_cui",scanner.next(), Field.Store.YES));
-					  writer.addDocument(doc);
-					  scanner.close();
 				  }
 				  br.close();
 			  } catch (Exception e){
@@ -401,7 +342,5 @@ public class OMIM_Adaptator {
 	      }
 	    }
 	  }
-	
-	
 
 }

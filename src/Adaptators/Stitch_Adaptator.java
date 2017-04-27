@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,61 +35,92 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class OMIM_Adaptator {
+public class Stitch_Adaptator {
 	
 	public static void main(String[] args) throws Exception {
-		OMIM_Adaptator omim= new OMIM_Adaptator();
-		omim.SearchIntoCSV("synonyms");
-		
-		
-		/*String test="http://purl.bioontology.org/ontology/OMIM/602076,\"TRANSIENT RECEPTOR POTENTIAL CATION CHANNEL, SUBFAMILY V, MEMBER 1\",VR1|VANILLOID RECEPTOR 1|CAPSAICIN RECEPTOR|TRPV1,,false,C1421467,http://purl.bioontology.org/ontology/STY/T028,";
-		Scanner scan=new Scanner(test);
-		scan.useDelimiter(",");
-		String content="";
-		String content2="";
-		scan.next();
-		if ((content=scan.next()).contains("\"")){
-			while(!(content2=scan.next()).contains("\"")){
-				content=content+content2;
-			}
-			content=content+content2;
-		}
-		System.out.println(content);
-		System.out.println(content2);*/
-			
-	
-	}
-	
-	/**
-	 * Constructeur qui lors de son initialisation, créer les index de omim csv et omim txt
-	 * Il suffit alors d'appeler les autres fonctions pour effectuer les recherches
-	 * @throws IOException
-	 */
-	public OMIM_Adaptator() throws IOException{
-		CreateIndex("omim.txt","index_omim_txt");
-		CreateIndex("omim_onto.csv","index_omim_csv");
+		//testReadATC();
+		new Stitch_Adaptator();
+		SearchElement("index_stitch","atc_code","alias");
 		
 	}
 	
-	public void SearchIntoCSV(String queryField){
-		try {
-			SearchElement("index_omim_csv",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public Stitch_Adaptator(){
+		//CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
+		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
+
 	}
 	
-	public void SearchIntoTXT(String queryField){
-		try {
-			SearchElement("index_omim_txt",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public static void testReadStitch() throws IOException{
+		//lecture du fichier stitch
+				BufferedReader flotFiltre;
+				String filtre;
+				flotFiltre = new BufferedReader(new FileReader("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv"));
+				filtre=flotFiltre.readLine();
+				BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testStitch1.tsv")));
+				int cmpt=0;
+				int cmpATC=0;
+				int cmpKEGG=0;
+				int cmpPC=0;
+				int cmpPS=0;
+				int cmpBD=0;
+				int cmpEBI=0;
+				int cmpEMBL=0;
+				for (int i=0;i<9;i++){
+					filtre=flotFiltre.readLine();
+					flot.write(filtre+"  "+cmpt+"\n");
+				}
+				while (filtre!=null/*&&cmpt<10000000*/){
+					Scanner scan=new Scanner(filtre);
+					scan.useDelimiter("	");
+					scan.next();
+					scan.next();
+					String buff=scan.next();
+					if (buff.equals("PC")){
+						if(cmpPC<100000){flot.write(filtre+"  "+cmpt+"\n");}
+						cmpPC++;
+					} else if(buff.equals("PS")){
+						if(cmpPS<100000){flot.write(filtre+"  "+cmpt+"\n");}
+						cmpPS++;
+					}else if(buff.equals("KEGG")){
+						flot.write(filtre+"  "+cmpt+"\n");
+						cmpKEGG++;
+					}else if(buff.equals("BindingDB")){
+						if(cmpBD<100000){flot.write(filtre+"  "+cmpt+"\n");}
+						cmpBD++;
+					}else if(buff.equals("ChEBI")){
+						if(cmpEBI<100000){flot.write(filtre+"  "+cmpt+"\n");}
+						cmpEBI++;
+					}else if(buff.equals("ChEMBL")){
+						if(cmpEMBL<100000){flot.write(filtre+"  "+cmpt+"\n");}
+						cmpEMBL++;
+					}else if(buff.equals("ATC")){
+						flot.write(filtre+"  "+cmpt+"\n");
+						cmpATC++;
+					}
+						
+						
+					filtre=flotFiltre.readLine();
+					cmpt++;
+					scan.close();
+					if (cmpt%10000000==0)
+						System.out.println(cmpt);
+				}
+				System.out.println(cmpt);
+				System.out.println(cmpATC);
+				System.out.println(cmpKEGG);
+				System.out.println(cmpBD);
+				System.out.println(cmpEBI);
+				System.out.println(cmpEMBL);
+				System.out.println(cmpKEGG);
+				System.out.println(cmpPC);
+				System.out.println(cmpPS);
+				flot.close();
+				flotFiltre.close();
 	}
 	
- 	private static void CreateIndex(String docsPath,String indexPath) {
+	
+
+	private static void CreateIndex(String docsPath,String indexPath) {
 	    boolean create = true;
 
 	    final Path docDir = Paths.get(docsPath);
@@ -126,10 +156,7 @@ public class OMIM_Adaptator {
 	      IndexWriter writer = new IndexWriter(dir, iwc);
 	      
 	      //indexDocs(writer, docDir);
-	      if (docsPath.endsWith("txt"))
-	    	  indexDocTxt(writer, new File(docDir.toString()));
-	      else if (docsPath.endsWith("csv"))
-	    	  indexDocCsv(writer, new File(docDir.toString()));
+	      indexDoc(writer, new File(docDir.toString()));
 	    	  
 
 	      // NOTE: if you want to maximize search performance,
@@ -151,7 +178,7 @@ public class OMIM_Adaptator {
 	    }
 	  }
 	
-	private static void indexDocTxt(IndexWriter writer, File file) throws IOException {
+	private static void indexDoc(IndexWriter writer, File file) throws IOException {
 		  int eltcount = 0;
 		  if (file.canRead() && !file.isDirectory()){
 			  try{
@@ -160,79 +187,28 @@ public class OMIM_Adaptator {
 				  BufferedReader br = new BufferedReader(ipsr);
 				  String line;
 				  Document doc=null;
-				  line=br.readLine();
-
-				  while ((line=br.readLine())!=null ){
-					  if (line.equals("*FIELD* NO")){
+				  for (int i=0;i<9;i++)
+					  line=br.readLine();
+				  
+				  int cmpt=0;
+				  while ((line=br.readLine())!=null && cmpt<4000){
+					  Scanner scanner=new Scanner(line);
+					  scanner.useDelimiter("	");
+					  cmpt++;
+					  
+					  String chemical=scanner.next();
+					  String alias=scanner.next();
+					  String source=scanner.next();
+					  String source_code=scanner.next();
+					  if (source.equals("ATC")){
 						  doc = new Document();
 						  eltcount++;
-						  line=br.readLine();
-						  doc.add(new TextField("id_omim", line,Field.Store.YES));//Ã  changer pour ne pas l'indexer
-					  } else if (line.startsWith("*FIELD* TI")){
-						  line=br.readLine();
-						  doc.add(new TextField("name/synonyms",line, Field.Store.YES));
-					  } else if (line.startsWith("*FIELD* CS")){
-						  line=br.readLine();
-						  String content=line;
-						  while (!(line=br.readLine()).startsWith("*FIELD*")){
-							  content=content + "\n" + line;
-						  }
-						  doc.add(new TextField("Symptoms",content, Field.Store.YES));
-					  } else if (line.startsWith("*RECORD*") ||line.startsWith("*THEEND*")){
+						  doc.add(new TextField("chemical", chemical.substring(4), Field.Store.YES));
+						  doc.add(new TextField("alias", alias.substring(4), Field.Store.YES));
+						  doc.add(new TextField("atc_code", source_code, Field.Store.YES));
 						  writer.addDocument(doc);
 					  }
-				  }
-				  br.close();
-			  } catch (Exception e){
-				  System.out.println(e.toString());
-			  }
-		  }
-		  System.out.println(eltcount + " elements ont Ã©tÃ© ajoutÃ© Ã  l'index ");
-	  }
-
-	private static void indexDocCsv(IndexWriter writer, File file) throws IOException {
-		  int eltcount = 0;
-		  if (file.canRead() && !file.isDirectory()){
-			  try{
-				  InputStream ips = new FileInputStream(file);
-				  InputStreamReader ipsr = new InputStreamReader(ips);
-				  BufferedReader br = new BufferedReader(ipsr);
-				  String line;
-				  Document doc=null;
-				  line=br.readLine();
-
-				  while ((line=br.readLine())!=null ){
-					  Scanner scanner=new Scanner(line);
-					  //String cursor=scanner.next();
-					  scanner.useDelimiter(",");
 					  
-					  doc = new Document();
-					  eltcount++;
-					  doc.add(new TextField("id_omim", scanner.next().substring(42), Field.Store.YES));
-					  String content="";
-					  String content2="";
-					  if ((content=scanner.next()).contains("\"") && !content.substring(1).contains("\"")){
-						  while(!(content2=scanner.next()).contains("\"")){
-							  content=content+content2;
-						  }
-						  content=content+content2;
-					  }
-					  doc.add(new TextField("name",content, Field.Store.YES));
-					  
-					  content="";
-					  content2="";
-					  if ((content=scanner.next()).contains("\"") && !content.substring(1).contains("\"")){
-						  while(!(content2=scanner.next()).contains("\"")){
-							  content=content+content2;
-						  }
-						  content=content+content2;
-					  }
-					  doc.add(new TextField("synonyms",content, Field.Store.YES));
-					  scanner.next();
-					  scanner.next();
-					  doc.add(new TextField("id_cui",scanner.next(), Field.Store.YES));
-					  writer.addDocument(doc);
-					  scanner.close();
 				  }
 				  br.close();
 			  } catch (Exception e){
@@ -401,7 +377,5 @@ public class OMIM_Adaptator {
 	      }
 	    }
 	  }
-	
-	
 
 }
