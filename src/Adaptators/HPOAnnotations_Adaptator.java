@@ -15,6 +15,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -22,9 +23,17 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -33,12 +42,17 @@ public class HPOAnnotations_Adaptator {
 	private static String db = "HPO/hpo_annotations.sqlite";
 	private static Connection con = null;
 	private static Statement st = null;
+	
+	
+	public HPOAnnotations_Adaptator() throws IOException{
+		SQLiteConnect();
+		Indexer("index_HPOAnnotations" ,"HPOAnnotations.txt", true);
+	}
 
 	
 	
-	public static void main(String[] args) throws IOException {
-		SQLiteConnect();
-		Indexer("index_HPOAnnotations" ,"HPOAnnotations.txt", true);
+	public static void main(String[] args) throws IOException, ParseException {
+		new HPOAnnotations_Adaptator();
 	}
 		
 		
@@ -59,7 +73,7 @@ public class HPOAnnotations_Adaptator {
 						String disease_id = res.getString(2);
 						String disease_label = res.getString(3);
 						String sign_id = res.getString(4);
-						file.write(disease_db+"|"+disease_id+"|"+disease_label+"|"+sign_id+"|\n");
+						file.write(disease_db+"SEPARATEUR"+disease_id+"SEPARATEUR"+disease_label+"SEPARATEUR"+sign_id+"SEPARATEUR\n");
 					}
 					
 					file.close();
@@ -150,7 +164,7 @@ public class HPOAnnotations_Adaptator {
 			  
 			  while(!(line==null)){
 					  doc = new Document();
-					  String[] elts = line.split("|");
+					  String[] elts = line.split("SEPARATEUR");
 					  doc.add(new TextField("disease_db",elts[0],Field.Store.YES));
 					  doc.add(new TextField("disease_id",elts[1],Field.Store.YES));
 					  doc.add(new TextField("disease_label",elts[2],Field.Store.YES));
@@ -163,6 +177,9 @@ public class HPOAnnotations_Adaptator {
 			  System.out.println(e.toString());
 		  }
 	  }
+	}
+
+	
+	
 }
 
-}

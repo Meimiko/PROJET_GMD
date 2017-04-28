@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -22,8 +23,16 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -39,10 +48,26 @@ public class SIDER_Adaptator {
 	static String driver = "com.mysql.jdbc.Driver";
 	static String login = "gmd-read";
 	static String pwd = "esial";
-
-	public static void main(String[] args) throws IOException {
+	
+	public SIDER_Adaptator() throws IOException{
 		SQLRequest();
 		Indexer("index_sider" ,"sider.txt", true);
+	}
+
+	public static void main(String[] args) throws IOException, ParseException {
+		/*ArrayList<String> conceptName = new ArrayList<String>();
+		conceptName.add("Hepatitis B");
+		conceptName.add("Colorectal cancer metastatic");
+		conceptName.add("Nausea");
+		new SIDER_Adaptator().meddraConceptnameToId(conceptName);*/
+		
+		ArrayList<String> sideEffect = new ArrayList<String>();
+		sideEffect.add("Diarrhoea");
+		sideEffect.add("Body temperature increased");
+		sideEffect.add("Hypotension");
+		new SIDER_Adaptator().meddraSeToId(sideEffect);
+	
+		
 	}
 		
 		
@@ -224,6 +249,59 @@ public class SIDER_Adaptator {
 		  }
 	  }
   }
+  
+  public ArrayList<String> meddraConceptnameToId(ArrayList<String> conceptName) throws IOException, ParseException{
+		ArrayList<String> Ids=new ArrayList<String>();
+		
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_sider")));
+	    IndexSearcher searcher = new IndexSearcher(reader);
+	    Analyzer analyzer = new StandardAnalyzer();
+	    QueryParser parser = new QueryParser("meddra_concept_name", analyzer);
+	    
+	    for (int j=0;j<conceptName.size();j++){
+		    String line = conceptName.get(j);
+	
+		    //line = line.trim();
+		    Query query = parser.parse(line);
+		    
+		    TopDocs results = searcher.search(query, 1000);
+		    //System.out.println("Nombre de resultat :"+results.totalHits);
+		    ScoreDoc[] hits = results.scoreDocs;
+		    for (int i=0;i<results.totalHits;i++){
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	Ids.add(doc.get("stitch_compound_id"));
+		    	//System.out.println(doc.get("stitch_compound_id"));
+		    }
+	    }
+		return Ids;
+	}
+  
+  public ArrayList<String> meddraSeToId(ArrayList<String> sideEffect) throws IOException, ParseException{
+		ArrayList<String> Ids=new ArrayList<String>();
+		
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_sider")));
+	    IndexSearcher searcher = new IndexSearcher(reader);
+	    Analyzer analyzer = new StandardAnalyzer();
+	    QueryParser parser = new QueryParser("side_effect_name", analyzer);
+	    
+	    for (int j=0;j<sideEffect.size();j++){
+		    String line = sideEffect.get(j);
+	
+		    //line = line.trim();
+		    Query query = parser.parse(line);
+		    
+		    TopDocs results = searcher.search(query, 1000);
+		    //System.out.println("Nombre de resultat :"+results.totalHits);
+		    ScoreDoc[] hits = results.scoreDocs;
+		    for (int i=0;i<results.totalHits;i++){
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	Ids.add(doc.get("stitch_compound_id1"));
+		    	Ids.add(doc.get("stitch_compound_id2"));
+		    	//System.out.println(doc.get("stitch_compound_id1")+"	"+doc.get("stitch_compound_id2"));
+		    }
+	    }
+		return Ids;
+	}
   
 }
 

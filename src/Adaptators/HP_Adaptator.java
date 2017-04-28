@@ -3,12 +3,19 @@ package Adaptators;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -16,16 +23,39 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 
 public class HP_Adaptator {
 	
-	public static void main(String args[]){
+	public static void main(String args[]) throws IOException, ParseException, ClassNotFoundException, SQLException{
+		
+		/*ArrayList<String> HpoboName = new ArrayList<String>();
+		HpoboName.add("Functional abnormality of the bladder");
+		HpoboName.add("Increased ratio of VWF propeptide to VWF antigen");
+		HpoboName.add("Abnormality of inferior alveolar nerve");
+		new HP_Adaptator().nameToId(HpoboName);*/
+		
+		ArrayList<String> oboId = new ArrayList<String>();
+		oboId.add("HP:0003142");
+		oboId.add("HP:0011120");
+		oboId.add("HP:0030735");
+		new HP_Adaptator().oboIdToSqliteDiseaselabel(oboId);
+	}
+	
+	public HP_Adaptator(){
 		Indexer("Index_HP.obo","HPO/HP.obo",true);
 	}
 	
@@ -87,7 +117,7 @@ public class HP_Adaptator {
 
 		  static void indexDoc(IndexWriter writer, File file) throws IOException {
 			  if (file.canRead() && !file.isDirectory()){
-				 // try{
+				  try{
 					  InputStream ips = new FileInputStream(file);
 					  InputStreamReader ipsr = new InputStreamReader(ips);
 					  BufferedReader br = new BufferedReader(ipsr);
@@ -101,7 +131,7 @@ public class HP_Adaptator {
 							  while (!(line.equals("[Term]"))){
 								  if(line.startsWith("id:")){
 									  String content = line;
-									  content = content.substring("[Term]".length()+1);
+									  content = content.substring("id:".length()+1);
 									  doc.add(new TextField("ID",content,Field.Store.YES));
 								  }
 								  else if(line.startsWith("name:")){
@@ -134,13 +164,63 @@ public class HP_Adaptator {
 						  }
 					  }				  
 					  br.close();
-				//  } catch (Exception e){
-				//	  System.out.println(e.toString());
+				  } catch (Exception e){
+					  System.out.println(e.toString());
 				  }
 			  }
 		  }
+		  
+		  public ArrayList<String> nameToId(ArrayList<String> HpoboName) throws IOException, ParseException{
+				ArrayList<String> Ids=new ArrayList<String>();
+				
+				IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_HP.obo")));
+			    IndexSearcher searcher = new IndexSearcher(reader);
+			    Analyzer analyzer = new StandardAnalyzer();
+			    QueryParser parser = new QueryParser("name", analyzer);
+			    
+			    for (int j=0;j<HpoboName.size();j++){
+				    String line = HpoboName.get(j);
+			
+				    //line = line.trim();
+				    Query query = parser.parse(line);
+				    
+				    TopDocs results = searcher.search(query, 1000);
+				    //System.out.println("Nombre de resultat :"+results.totalHits);
+				    ScoreDoc[] hits = results.scoreDocs;
+				    for (int i=0;i<results.totalHits;i++){
+				    	Document doc = searcher.doc(hits[i].doc);
+				    	Ids.add(doc.get("ID"));
+				    	System.out.println(doc.get("ID"));
+				    }
+			    }
+				return Ids;
+			}
+		  
+		  public ArrayList<String> oboIdToSqliteDiseaselabel(ArrayList<String> oboId) throws IOException, ParseException, ClassNotFoundException, SQLException {
+				ArrayList<String> sqliteDiseaseLabel=new ArrayList<String>();
+				
+				String db = "HPO/hpo_annotations.sqlite";
+				Class.forName("org.sqlite.JDBC");
+				Connection con=DriverManager.getConnection("jdbc:sqlite:"+db);
+				Statement st = con.createStatement();
+				System.out.println("connection established");
+
+				for(int i=0;i<oboId.size();i++){
+					String myQuery = "SELECT disease_label FROM phenotype_annotation WHERE sign_id="+"\""+oboId.get(i)+"\"";	
+					ResultSet res = st.executeQuery(myQuery);
+					while(res.next()){
+						sqliteDiseaseLabel.add(res.getString(1));
+						//System.out.println(res.getString(1));
+					}
+					res.close();
+				}
+				st.close();
+				con.close(); 
+				return sqliteDiseaseLabel;
+			}
+
 			  
-	//  }
+	  }
 		  
 		
 
