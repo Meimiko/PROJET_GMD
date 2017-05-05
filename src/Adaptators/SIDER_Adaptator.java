@@ -49,8 +49,8 @@ public class SIDER_Adaptator {
 	static String login = "gmd-read";
 	static String pwd = "esial";
 	
-	public SIDER_Adaptator() throws IOException{
-		SQLRequest();
+	public SIDER_Adaptator(String symptom) throws IOException{
+		SQLRequest(symptom);
 		Indexer("index_sider" ,"sider.txt", true);
 	}
 
@@ -59,25 +59,25 @@ public class SIDER_Adaptator {
 		conceptName.add("Hepatitis B");
 		conceptName.add("Colorectal cancer metastatic");
 		conceptName.add("Nausea");
-		new SIDER_Adaptator().meddraConceptnameToId(conceptName);*/
+		new SIDER_Adaptator("Vomiting").meddraConceptnameToId(conceptName);*/
 		
 		ArrayList<String> sideEffect = new ArrayList<String>();
 		sideEffect.add("Diarrhoea");
 		sideEffect.add("Body temperature increased");
 		sideEffect.add("Hypotension");
-		new SIDER_Adaptator().meddraSeToId(sideEffect);
+		new SIDER_Adaptator("Vomiting").meddraSeToId(sideEffect);
 	
 		
 	}
 		
 		
-		public static void SQLRequest() throws IOException{
+		public static void SQLRequest(String symptom) throws IOException{
 				try{
 					Class.forName(driver);
 					Connection con=DriverManager.getConnection(db_server+database,login,pwd);
 					FileWriter file=new FileWriter("sider.txt");
 					
-					String myQuery = "SELECT cui,meddra_id,label FROM meddra";		
+					String myQuery = "SELECT cui,meddra_id,label FROM meddra WHERE meddra.label=\""+symptom+"\"";		
 					Statement st = con.createStatement();
 					ResultSet res = st.executeQuery(myQuery);
 					file.write("meddra\n");
@@ -88,7 +88,7 @@ public class SIDER_Adaptator {
 						file.write(cui+","+meddra_id+","+label+",\n");
 					}
 					
-					myQuery = "SELECT stitch_compound_id, cui, concept_name, cui_of_meddra_term, meddra_concept_name FROM meddra_all_indications";		
+					myQuery = "SELECT stitch_compound_id, cui, concept_name, cui_of_meddra_term, meddra_concept_name FROM meddra_all_indications WHERE meddra_concept_name=\""+symptom+"\" OR concept_name=\""+symptom+"\"";	
 					st = con.createStatement();
 					res = st.executeQuery(myQuery);
 					file.write("meddra_all_indications\n");
@@ -101,7 +101,7 @@ public class SIDER_Adaptator {
 						file.write(stitch_compound_id+","+cui+","+concept_name+","+cui_of_meddra_term+","+meddra_concept_name+",\n");
 					}
 					
-					myQuery = "SELECT stitch_compound_id1, stitch_compound_id2, cui, cui_of_meddra_term, side_effect_name FROM meddra_all_se";		
+					myQuery = "SELECT stitch_compound_id1, stitch_compound_id2, cui, cui_of_meddra_term, side_effect_name FROM meddra_all_se WHERE side_effect_name=\""+symptom+"\"";		
 					st = con.createStatement();
 					res = st.executeQuery(myQuery);
 					file.write("meddra_all_se\n");
