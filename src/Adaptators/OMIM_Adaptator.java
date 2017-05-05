@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -28,6 +29,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -40,24 +42,18 @@ public class OMIM_Adaptator {
 	
 	public static void main(String[] args) throws Exception {
 		OMIM_Adaptator omim= new OMIM_Adaptator();
-		omim.SearchIntoCSV("synonyms");
+		//omim.SearchIntoTXT("Symptoms");
+		
+		ArrayList<String> signs=new ArrayList<String>();
+		signs.add("Follicular hyperkeratosis");
 		
 		
-		/*String test="http://purl.bioontology.org/ontology/OMIM/602076,\"TRANSIENT RECEPTOR POTENTIAL CATION CHANNEL, SUBFAMILY V, MEMBER 1\",VR1|VANILLOID RECEPTOR 1|CAPSAICIN RECEPTOR|TRPV1,,false,C1421467,http://purl.bioontology.org/ontology/STY/T028,";
-		Scanner scan=new Scanner(test);
-		scan.useDelimiter(",");
-		String content="";
-		String content2="";
-		scan.next();
-		if ((content=scan.next()).contains("\"")){
-			while(!(content2=scan.next()).contains("\"")){
-				content=content+content2;
-			}
-			content=content+content2;
-		}
-		System.out.println(content);
-		System.out.println(content2);*/
-			
+		//Rajouter un lien o� on utilise le csv ?
+		//csv.id_omim->csv.id_cui->stitch.cui   ?
+		omim.getFieldfromTXT("id_omim",signs);
+		omim.getFieldfromTXT("name/synonyms",signs);
+		
+		
 	
 	}
 	
@@ -67,8 +63,8 @@ public class OMIM_Adaptator {
 	 * @throws IOException
 	 */
 	public OMIM_Adaptator() throws IOException{
-		CreateIndex("omim.txt","index_omim_txt");
-		CreateIndex("omim_onto.csv","index_omim_csv");
+		//CreateIndex("omim.txt","index_omim_txt");
+		//CreateIndex("omim_onto.csv","index_omim_csv");
 		
 	}
 	
@@ -170,7 +166,7 @@ public class OMIM_Adaptator {
 						  doc.add(new TextField("id_omim", line,Field.Store.YES));//à changer pour ne pas l'indexer
 					  } else if (line.startsWith("*FIELD* TI")){
 						  line=br.readLine();
-						  doc.add(new TextField("name/synonyms",line, Field.Store.YES));
+						  doc.add(new TextField("name/synonyms",line.substring(line.indexOf(" ")), Field.Store.YES));
 					  } else if (line.startsWith("*FIELD* CS")){
 						  line=br.readLine();
 						  String content=line;
@@ -241,6 +237,39 @@ public class OMIM_Adaptator {
 		  }
 		  System.out.println(eltcount + " elements ont été ajouté à l'index ");
 	  }
+	
+	
+	//
+	public ArrayList<String> getFieldfromTXT(String getField,ArrayList<String> signs) throws IOException, ParseException{
+		ArrayList<String> ids_omim=new ArrayList<String>();
+		
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("index_omim_txt")));
+	    IndexSearcher searcher = new IndexSearcher(reader);
+	    Analyzer analyzer = new StandardAnalyzer();
+	    
+	    String field="Symptoms";
+	    QueryParser parser = new QueryParser(field, analyzer);
+	    
+	    BufferedReader in = null;
+	    for (int j=0;j<signs.size();j++){
+		    String line = signs.get(j);
+	
+		    //line = line.trim();
+		    Query query = parser.parse(line);
+		    
+		    TopDocs results = searcher.search(query, 10000);
+		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entr�e :"+query);
+		    ScoreDoc[] hits = results.scoreDocs;
+		    for (int i=0;i<results.totalHits;i++){
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	ids_omim.add(doc.get(getField));
+		    	System.out.println(doc.get(getField));
+		    }
+	    }
+		return ids_omim;
+		
+	}
+	
 	
 	private static void SearchElement(String indexPath, String Searchfield,String idField) throws Exception {
 
