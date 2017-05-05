@@ -1,6 +1,8 @@
 package main;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -17,6 +19,14 @@ import Adaptators.SIDER_Adaptator;
 import Adaptators.Stitch_Adaptator;
 
 public class Mediator {
+	
+	
+	static String host = "neptune.telecomnancy.univ-lorraine.fr";
+	static String db_server = "jdbc:mysql://" + host + ":3306/";
+	static String database = "gmd";
+	static String driver = "com.mysql.jdbc.Driver";
+	static String login = "gmd-read";
+	static String pwd = "esial";
 	
 	public static void main(String[] args) throws Exception,ClassNotFoundException, IOException, ParseException, SQLException {
 		
@@ -61,29 +71,40 @@ public class Mediator {
 		
 		
 		ArrayList<String> Ids = new ArrayList<String>();
+		Class.forName(driver);
+		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
 		for (String disease : listOfDiseases){
 			SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator(/*disease*/);
 			/*ArrayList<String> diseasesTemp=new ArrayList<String>();
 			diseasesTemp.add(disease);*/
 			ArrayList<String> IdsTemp = new ArrayList<String>();
 			//IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
-			IdsTemp = sider_Adaptator.getStitchID(disease);
+			IdsTemp = sider_Adaptator.getStitchID(disease,con);
 			for (String id : IdsTemp){
 				if (!Ids.contains(id)){
 					Ids.add(id);
 				}
 			}	
 		}
+		System.out.println("Ids :"+Ids.size());
 		
 		Stitch_Adaptator Stitchadap = new Stitch_Adaptator();
 		ArrayList<String> IdsATC = Stitchadap.getId_Atc(Ids, true, true);
+		System.out.println("IdsATC :"+IdsATC.size());
 		
 		Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfIndications = Atcadap.getLabel(IdsATC);
 		
+		ArrayList<String> listOfIndicationsFinal = new ArrayList<String>();
+		
+		
 		for (String indication : listOfIndications){
-			System.out.println(indication);
+			if (!listOfIndicationsFinal.contains(indication)){
+				listOfIndicationsFinal.add(indication);
+				System.out.println(indication);
+			}
 		}
+		System.out.println("listOfIndicationsFinal: "+listOfIndicationsFinal.size());
 	}
 	
 }

@@ -223,7 +223,7 @@ public class Atc_Adaptator {
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	labels.add(doc.get("label"));
 		    	//System.out.println(doc.get("id_atc"));
-		    	System.out.println(doc.get("label"));
+		    	//System.out.println(doc.get("label"));
 		    }
 	    }
 		return labels;
