@@ -62,11 +62,12 @@ public class Mediator {
 		
 		ArrayList<String> Ids = new ArrayList<String>();
 		for (String disease : listOfDiseases){
-			SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator(disease);
-			ArrayList<String> diseasesTemp=new ArrayList<String>();
-			diseasesTemp.add(disease);
+			SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator(/*disease*/);
+			/*ArrayList<String> diseasesTemp=new ArrayList<String>();
+			diseasesTemp.add(disease);*/
 			ArrayList<String> IdsTemp = new ArrayList<String>();
-			IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
+			//IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
+			IdsTemp = sider_Adaptator.getStitchID(disease);
 			for (String id : IdsTemp){
 				if (!Ids.contains(id)){
 					Ids.add(id);

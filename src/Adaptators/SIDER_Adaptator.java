@@ -49,6 +49,8 @@ public class SIDER_Adaptator {
 	static String login = "gmd-read";
 	static String pwd = "esial";
 	
+	public SIDER_Adaptator(){};
+	
 	public SIDER_Adaptator(String symptom) throws IOException{
 		SQLRequest(symptom);
 		Indexer("index_sider" ,"sider.txt", true);
@@ -70,6 +72,18 @@ public class SIDER_Adaptator {
 		
 	}
 		
+		public ArrayList<String> getStitchID(String symptom) throws SQLException, ClassNotFoundException{
+			ArrayList<String> listOfStitchIds = new ArrayList<String>();
+			Class.forName(driver);
+			Connection con=DriverManager.getConnection(db_server+database,login,pwd);
+			String myQuery = "SELECT stitch_compound_id FROM meddra_all_indications WHERE meddra_concept_name=\""+symptom+"\" OR concept_name=\""+symptom+"\"";
+			Statement st = con.createStatement();
+			ResultSet res = st.executeQuery(myQuery);
+			//System.out.println(res.toString());
+			if (res.wasNull())
+				listOfStitchIds.add(res.getString(1));
+			return listOfStitchIds;
+		}
 		
 		public static void SQLRequest(String symptom) throws IOException{
 				try{

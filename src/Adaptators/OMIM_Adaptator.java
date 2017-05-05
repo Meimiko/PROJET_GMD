@@ -63,7 +63,7 @@ public class OMIM_Adaptator {
 	 * @throws IOException
 	 */
 	public OMIM_Adaptator() throws IOException{
-		//CreateIndex("omim.txt","index_omim_txt");
+		CreateIndex("omim.txt","index_omim_txt");
 		//CreateIndex("omim_onto.csv","index_omim_csv");
 		
 	}

@@ -57,7 +57,7 @@ public class Atc_Adaptator {
 	
 	
 	public Atc_Adaptator(){
-		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/atc/br08303.keg","index_atc");
+		CreateIndex("E:/IAMD/GMD/Projet/Projet/Données/atc/br08303.keg","index_atc");
 	}
 	
 	public static void testSider() throws IOException{
@@ -84,7 +84,7 @@ public class Atc_Adaptator {
 		public static void testReadATC() throws IOException{
 			BufferedReader flotFiltre;
 			String filtre;
-			flotFiltre = new BufferedReader(new FileReader("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/atc/br08303.keg"));
+			flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Données/atc/br08303.keg"));
 			filtre=flotFiltre.readLine();
 			BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testAtc.keg")));
 			int cmpt=0;

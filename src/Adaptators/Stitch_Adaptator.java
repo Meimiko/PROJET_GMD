@@ -54,7 +54,7 @@ public class Stitch_Adaptator {
 	}
 	
 	public Stitch_Adaptator(){
-		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
+		CreateIndex("E:/IAMD/GMD/Projet/Projet/Données/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv","index_stitch");
 
 	}
 	
@@ -62,7 +62,7 @@ public class Stitch_Adaptator {
 		//lecture du fichier stitch
 				BufferedReader flotFiltre;
 				String filtre;
-				flotFiltre = new BufferedReader(new FileReader("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv"));
+				flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Données/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv"));
 				filtre=flotFiltre.readLine();
 				BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testStitch1.tsv")));
 				int cmpt=0;
