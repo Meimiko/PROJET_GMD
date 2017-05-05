@@ -50,7 +50,7 @@ public class Orphadata_Adaptator {
 	// HTTP GET request
 	private void sendGet() throws Exception {
 
-		String url = "http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseByClinicalSign?key=%22Abnormal%20colour%20of%20the%20urine%2Fcholic%2Fdark%20urines%22";
+		String url = "http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseByClinicalSign?startkey=%22Abnormal%20colour%20of%20the%20urine%22&endkey=%22Abnormal%20d%22";
 		
 		
 		URL obj = new URL(url);

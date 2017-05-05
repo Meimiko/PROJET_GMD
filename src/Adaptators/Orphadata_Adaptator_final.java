@@ -1,6 +1,7 @@
 package Adaptators;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,6 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,24 +22,27 @@ import org.json.simple.parser.JSONParser;
 public class Orphadata_Adaptator_final {
 
 	private final String USER_AGENT = "Mozilla/5.0";
+	
+	public Orphadata_Adaptator_final() {
+	}
 
-	public static void main(String[] args) throws Exception {
+	public ArrayList<String> clinicalSignToDisease(String clinicalSign) throws Exception {
 
 		Orphadata_Adaptator_final http = new Orphadata_Adaptator_final();
 		
-		System.out.println("Entrez votre requete");
+		/*System.out.println("Entrez votre requete");
 		
 		Scanner sc;
-		sc = new Scanner(System.in);
+		sc = new Scanner(System.in);*/
 		
 		//http.sendGet();
         
-     //   JSON
+		//   JSON
         JSONObject obj = new JSONObject();
         
-        String req=sc.nextLine();
+        //String req=sc.nextLine();
         //System.out.println(req);
-		obj=http.sendGet(req);
+		obj=http.sendGet(clinicalSign);
 		
 		System.out.println("Testing 1 - Send Http GET request");
 
@@ -64,9 +70,10 @@ public class Orphadata_Adaptator_final {
         	disease = (JSONObject) value.get("disease");
         	name = (JSONObject) disease.get("Name");
         	diseasesList.add((String)name.get("text"));
-        	System.out.println(name.get("text"));
+        	//System.out.println(name.get("text"));
         }
         
+        return diseasesList;
        //System.out.println(rows);
 
 	}
