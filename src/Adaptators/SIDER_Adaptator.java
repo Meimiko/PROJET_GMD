@@ -87,6 +87,22 @@ public class SIDER_Adaptator {
 			return listOfStitchIds;
 		}
 		
+		public ArrayList<String> getStitchSEID(String symptom, Connection con) throws SQLException, ClassNotFoundException{
+			ArrayList<String> listOfSEStitchIds = new ArrayList<String>();
+			
+			String myQuery = "SELECT stitch_compound_id1, stitch_compound_id2 FROM meddra_all_se WHERE side_effect_name=\""+symptom+"\"";
+			Statement st = con.createStatement();
+			ResultSet res = st.executeQuery(myQuery);
+			if (res.isBeforeFirst()){
+				res.next();
+				listOfSEStitchIds.add(res.getString(1).substring(4));
+				listOfSEStitchIds.add(res.getString(2).substring(4));
+			}
+			return (listOfSEStitchIds);
+		}
+		
+		
+		
 		public static void SQLRequest(String symptom) throws IOException{
 				try{
 					Class.forName(driver);

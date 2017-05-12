@@ -263,7 +263,7 @@ public class OMIM_Adaptator {
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	ids_omim.add(doc.get(getField));
-		    	System.out.println(doc.get(getField));
+		    	//System.out.println(doc.get(getField));
 		    }
 	    }
 		return ids_omim;
