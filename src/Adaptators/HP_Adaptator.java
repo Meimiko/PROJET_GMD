@@ -40,6 +40,9 @@ import org.apache.lucene.store.FSDirectory;
 
 public class HP_Adaptator {
 	
+	private int IDNumberOBO=0; // opt1
+	private int Sign_idSQLITE=0; // opt1
+	
 	public static void main(String args[]) throws IOException, ParseException, ClassNotFoundException, SQLException{
 		
 		/*ArrayList<String> HpoboName = new ArrayList<String>();
@@ -51,7 +54,7 @@ public class HP_Adaptator {
 		ArrayList<String> oboId = new ArrayList<String>();
 		oboId.add("HP:0003142");
 		oboId.add("HP:0011120");
-		oboId.add("HP:0030735");
+		oboId.add("HP:0030f735");
 		new HP_Adaptator().oboIdToSqliteDiseaselabel(oboId);
 	}
 	
@@ -190,14 +193,16 @@ public class HP_Adaptator {
 				    for (int i=0;i<results.totalHits;i++){
 				    	Document doc = searcher.doc(hits[i].doc);
 				    	Ids.add(doc.get("ID"));
-				    	System.out.println(doc.get("ID"));
+				    	this.IDNumberOBO+=1; // opt1
 				    }
 			    }
+			    System.out.println("Number of HPO.Obo ID which match with the symptom name entered by the user : "+this.IDNumberOBO); // opt1
 				return Ids;
 			}
 		  
 		  public ArrayList<String> oboIdToSqliteDiseaselabel(ArrayList<String> oboId) throws IOException, ParseException, ClassNotFoundException, SQLException {
 				ArrayList<String> sqliteDiseaseLabel=new ArrayList<String>();
+				ArrayList<String> sqlitesignid=new ArrayList<String>();
 				
 				String db = "HPO/hpo_annotations.sqlite";
 				Class.forName("org.sqlite.JDBC");
@@ -206,18 +211,27 @@ public class HP_Adaptator {
 				System.out.println("connection established");
 
 				for(int i=0;i<oboId.size();i++){
-					String myQuery = "SELECT disease_label FROM phenotype_annotation WHERE sign_id="+"\""+oboId.get(i)+"\"";	
+					String myQuery = "SELECT disease_label, sign_id FROM phenotype_annotation WHERE sign_id="+"\""+oboId.get(i)+"\"";	
 					ResultSet res = st.executeQuery(myQuery);
 					while(res.next()){
 						sqliteDiseaseLabel.add(res.getString(1));
-						//System.out.println(res.getString(1));
+						if(!sqlitesignid.contains(res.getString(2))){sqlitesignid.add(res.getString(2));} // opt1
+						//System.out.println(res.getString(2));
 					}
 					res.close();
 				}
 				st.close();
-				con.close(); 
+				con.close();
+				this.Sign_idSQLITE = sqlitesignid.size();
+				for (int k=0;k<oboId.size();k++){
+					System.out.println("Number of different HPOAnnotations.Sqlite sign_id corresponding to the "+this.IDNumberOBO+" HPO.Obo ID : "+this.Sign_idSQLITE); // opt1
+				}
 				return sqliteDiseaseLabel;
 			}
+
+		public int getNameNumberOBO() { // opt1
+			return IDNumberOBO;
+		}
 
 			  
 	  }
