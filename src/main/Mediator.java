@@ -47,8 +47,28 @@ public class Mediator {
 		
 		ArrayList<String> listOfDiseases= new ArrayList<String>();
 		ArrayList<String> diseasesTemp;
+		ArrayList<String> soloDisease=new ArrayList<String>();
 		
+		soloDisease.add(listOfSymptoms.get(0));
 		
+		listOfDiseases=getDiseases(soloDisease);
+		listOfSymptoms.remove(0);
+		
+		for (String symptom:listOfSymptoms){
+			soloDisease=new ArrayList<String>();
+			soloDisease.add(symptom);
+			diseasesTemp=andJoint(listOfDiseases,getDiseases(soloDisease));
+			listOfDiseases= new ArrayList<String>();
+			listOfDiseases.addAll(diseasesTemp);
+		}
+		
+		final String ANSI_PURPLE = "\u001B[35m";
+		System.out.println("LISTE FINALE");
+		System.out.println(+listOfDiseases.size());
+		
+		for (String disease:listOfDiseases){
+			System.out.println(disease);
+		}
 		
 		//ArrayList<String> listOfDiseases= getDiseases(listOfSymptoms);
 		//ArrayList<String> listOfIndications = getIndications(listOfDiseases);
