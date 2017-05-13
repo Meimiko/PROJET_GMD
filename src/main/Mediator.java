@@ -45,11 +45,16 @@ public class Mediator {
 			listOfSymptoms.add(sc2.next());
 		}
 		
+		ArrayList<String> listOfDiseases= new ArrayList<String>();
+		ArrayList<String> diseasesTemp;
+		
+		
+		
 		//ArrayList<String> listOfDiseases= getDiseases(listOfSymptoms);
 		//ArrayList<String> listOfIndications = getIndications(listOfDiseases);
 		
 		//ArrayList<String> listOfTreatments = getTreatments(listOfSymptoms);
-		ArrayList<String> listOfSideEffects = getSideEffects(listOfSymptoms);
+		//ArrayList<String> listOfSideEffects = getSideEffects(listOfSymptoms);
 		
 	}
 
@@ -108,7 +113,7 @@ public class Mediator {
 
 	}
 	
-	public ArrayList<String> andJoint(ArrayList<String> listA, ArrayList<String> listB){
+	public static ArrayList<String> andJoint(ArrayList<String> listA, ArrayList<String> listB){
 		ArrayList<String> jointList = new ArrayList<String>();
 		
 		for (String element:listA){
