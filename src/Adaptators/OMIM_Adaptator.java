@@ -255,10 +255,10 @@ public class OMIM_Adaptator {
 		    String line = signs.get(j);
 	
 		    //line = line.trim();
-		    Query query = parser.parse(line);
+		    Query query = parser.parse("\""+line+"\"");
 		    
 		    TopDocs results = searcher.search(query, 10000);
-		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entrée :"+query);
+		    System.err.println("Nombre de resultat OMIMs:"+results.totalHits +" pour l'entrée :"+query);
 		    ScoreDoc[] hits = results.scoreDocs;
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);

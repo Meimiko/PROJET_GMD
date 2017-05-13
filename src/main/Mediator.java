@@ -101,7 +101,7 @@ public class Mediator {
 		
 
 		
-		System.out.println(ANSI_PURPLE+"LISTE FINALE");
+		System.out.println("LISTE FINALE");
 		
 		
 		for (String disease:finalListOfDiseases){
@@ -129,6 +129,8 @@ public class Mediator {
 		ArrayList<String> listOfHPDiseases;
 		listOfHPDiseases = HPadap.oboIdToSqliteDiseaselabel(HPadap.nameToId(listOfSymptoms));
 
+		System.err.println("List of Hp diseases :" + listOfHPDiseases.size());
+		
 		//Orphadatabase request
 		
 		Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
