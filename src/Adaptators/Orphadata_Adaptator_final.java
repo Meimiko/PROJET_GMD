@@ -90,8 +90,10 @@ public class Orphadata_Adaptator_final {
 			asciiFL=asciiFL-32;
 		}
 		firstLetter=(char) asciiFL;
+		System.err.println("NOM PAS CORRIGE"+ req);
 		req=firstLetter+req.substring(1);
-
+		System.out.println("NOM CORRIGE :"+ req);
+		
 		req="%22"+req+"%22";
 		req=req.replaceAll(" ", "%20");
 		req=req.replaceAll("/", "%2F");

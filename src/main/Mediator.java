@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.FocusTraversalPolicy;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,12 +11,17 @@ import java.util.Scanner;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.omg.CORBA.PUBLIC_MEMBER;
 
+import com.sun.glass.ui.Size;
+import com.sun.org.apache.regexp.internal.recompile;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import Adaptators.Atc_Adaptator;
 import Adaptators.HP_Adaptator;
 import Adaptators.OMIM_Adaptator;
 import Adaptators.Orphadata_Adaptator_final;
 import Adaptators.SIDER_Adaptator;
 import Adaptators.Stitch_Adaptator;
+import jdk.nashorn.internal.ir.RuntimeNode.Request;
 
 public class Mediator {
 
@@ -30,47 +36,79 @@ public class Mediator {
 
 	public static void main(String[] args) throws ClassNotFoundException, IOException, ParseException, SQLException, Exception {
 		System.out.println("Entrez un symptome");
-		ArrayList<String> listOfSymptoms=new ArrayList<String>();
 		
 		Scanner sc;
 		sc = new Scanner(System.in);
 		
 		String entry=sc.nextLine();
-		Scanner sc2=new Scanner(entry);
-		sc2.useDelimiter("&");
-		while(sc2.hasNext()){
-			listOfSymptoms.add(sc2.next());
+		
+		ArrayList<String> listOfRequests = new ArrayList<String>();
+		
+		Scanner or = new Scanner(entry);
+		or.useDelimiter(",");
+		while(or.hasNext()){
+			listOfRequests.add(or.next());
 		}
 		
+		for(String request:listOfRequests){
+			System.err.println(request);
+		}
+		
+		Scanner and;
 		
 		
-		
-		ArrayList<String> listOfDiseases= new ArrayList<String>();
+		ArrayList<String> listOfDiseasesTemp= new ArrayList<String>();
 		ArrayList<String> diseasesTemp;
-		ArrayList<String> soloDisease=new ArrayList<String>();
+		String soloDisease;
+		ArrayList<String> listOfSymptoms;
+		ArrayList<String> finalListOfDiseases = new ArrayList<String>();
 		
-		soloDisease.add(listOfSymptoms.get(0));
+		for (int j=0;j<listOfRequests.size();j++){
 		
-		listOfDiseases=getDiseases(soloDisease);
-		listOfSymptoms.remove(0);
-		
-		for (String symptom:listOfSymptoms){
-			soloDisease=new ArrayList<String>();
-			soloDisease.add(symptom);
-			diseasesTemp=andJoint(listOfDiseases,getDiseases(soloDisease));
-			listOfDiseases= new ArrayList<String>();
-			listOfDiseases.addAll(diseasesTemp);
+			and=new Scanner(listOfRequests.get(j));
+			and.useDelimiter("&");
+			listOfSymptoms=new ArrayList<String>();
+			
+			while(and.hasNext()){
+				listOfSymptoms.add(and.next());
+			}
+			soloDisease=listOfSymptoms.get(0);
+			
+			listOfDiseasesTemp=getDiseases(soloDisease);
+			listOfSymptoms.remove(0);
+			
+			for (String symptom:listOfSymptoms){
+				System.err.println("DANS LE FOR");
+				soloDisease=symptom;
+				diseasesTemp=andJoint(listOfDiseasesTemp,getDiseases(soloDisease));
+				listOfDiseasesTemp= new ArrayList<String>();
+				listOfDiseasesTemp.addAll(diseasesTemp);
+			}
+			
+			System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+			
+			if (j==0){
+				finalListOfDiseases.addAll(listOfDiseasesTemp);
+			}
+			else{
+				finalListOfDiseases=orJoint(finalListOfDiseases, listOfDiseasesTemp);
+			}
 		}
 		
+
+		
+		
+		
+
 		
 		System.out.println(ANSI_PURPLE+"LISTE FINALE");
 		
 		
-		for (String disease:listOfDiseases){
+		for (String disease:finalListOfDiseases){
 			System.out.println(disease);
 		}
 		
-		System.out.println(+listOfDiseases.size());
+		System.out.println(finalListOfDiseases.size());
 		//ArrayList<String> listOfDiseases= getDiseases(listOfSymptoms);
 		//ArrayList<String> listOfIndications = getIndications(listOfDiseases);
 		
@@ -80,8 +118,11 @@ public class Mediator {
 	}
 
 
-	public static ArrayList<String> getDiseases(ArrayList<String> listOfSymptoms) throws Exception,ClassNotFoundException, IOException, ParseException, SQLException {
+	public static ArrayList<String> getDiseases(String symptom) throws Exception,ClassNotFoundException, IOException, ParseException, SQLException {
 
+		ArrayList<String> listOfSymptoms = new ArrayList<String>();
+		listOfSymptoms.add(symptom);
+		
 		//HP request
 
 		HP_Adaptator HPadap = new HP_Adaptator();
@@ -89,10 +130,15 @@ public class Mediator {
 		listOfHPDiseases = HPadap.oboIdToSqliteDiseaselabel(HPadap.nameToId(listOfSymptoms));
 
 		//Orphadatabase request
-
+		
 		Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
+		ArrayList<String>listOfOrphaDiseases = Orphaadap.clinicalSignToDisease(symptom);
+
+		/*Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
 		ArrayList<String>listOfOrphaDiseases=new ArrayList<String>();
 		ArrayList<String>orphadiseasesTemp;
+		
+		
 		
 		for (String symptom:listOfSymptoms){
 			orphadiseasesTemp = Orphaadap.clinicalSignToDisease(symptom);
@@ -101,7 +147,7 @@ public class Mediator {
 					listOfOrphaDiseases.add(orphadiseaseTemp);
 				}
 			}
-		}
+		}*/
 		
 		
 		
@@ -150,6 +196,17 @@ public class Mediator {
 	}
 	
 	
+	public static ArrayList<String> orJoint(ArrayList<String> listA, ArrayList<String> listB){
+		ArrayList<String> jointList = new ArrayList<String>();
+		jointList.addAll(listA);
+		
+		for (String element:listB){
+			if(!jointList.contains(element)){
+				jointList.add(element);
+			}
+		}
+		return jointList;
+	}
 	
 	public static ArrayList<String> getIndications(ArrayList<String> listOfDiseases) throws ClassNotFoundException, SQLException, IOException, ParseException{
 		ArrayList<String> Ids = new ArrayList<String>();
