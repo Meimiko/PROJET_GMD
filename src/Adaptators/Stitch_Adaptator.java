@@ -41,6 +41,7 @@ public class Stitch_Adaptator {
 	
 	private int stitchCodeNumber=0; // opt1
 	private int atcCodeNumber=0; // opt1
+	private ArrayList<String> id_Cui_perdu=new ArrayList<String>();
 	
 	public static void main(String[] args) throws Exception {
 		//testReadATC();
@@ -50,14 +51,15 @@ public class Stitch_Adaptator {
 		ids_CUI.add("00001775");
 		ids_CUI.add("00001972");
 		ids_CUI.add("05280965");
+		ids_CUI.add("0528095");
 		
 		new Stitch_Adaptator().getId_Atc(ids_CUI,true,true);
-		SearchElement("index_stitch","atc_code","alias");
+		//SearchElement("index_stitch","atc_code","alias");
 		
 	}
 	
 	public Stitch_Adaptator(){
-		CreateIndex("E:/IAMD/GMD/Projet/Projet/Données/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv","index_stitch");
+		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
 
 	}
 	
@@ -248,6 +250,7 @@ public class Stitch_Adaptator {
 	    String field;
 	    if (alias){
 	    	field="alias";
+	    	id_Cui_perdu=new ArrayList<String>();
 	    	labels=getId_Atc(id_CUI,chemical,false);
 	    } else if(chemical){
 	    	field="chemical";
@@ -266,17 +269,24 @@ public class Stitch_Adaptator {
 		    Query query = parser.parse(line);
 		    
 		    TopDocs results = searcher.search(query, 1000);
-		    System.out.println("Number of results with the user search \""+query+"\" : "+results.totalHits); 
+		    //System.out.println("Number of results with the user search \""+query+"\" : "+results.totalHits); 
 		    ScoreDoc[] hits = results.scoreDocs;
+		    if (chemical & !alias & results.totalHits==0){
+		    	id_Cui_perdu.add(line);
+		    }
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	labels.add(doc.get("atc_code"));
 		    	if (doc.get("atc_code")!=null){this.atcCodeNumber+=1;}
 		    	//System.out.println(doc.get("id_atc"));
 		    }
+		    if (alias & results.totalHits==0 & id_Cui_perdu.contains(line)){
+		    	System.out.println("Cui perdu :"+ line);
+		    }
 	    }
-	    System.out.println("Number of Stitch source_code which match with the user search : "+this.stitchCodeNumber); // opt1 
-	    System.out.println("Number of Atc Code which match with the previous "+this.stitchCodeNumber+"Stitch source_code : "+this.atcCodeNumber); // opt1
+	    
+	    //System.out.println("Number of Stitch source_code which match with the user search : "+this.stitchCodeNumber); // opt1 
+	    //System.out.println("Number of Atc Code which match with the previous "+this.stitchCodeNumber+"Stitch source_code : "+this.atcCodeNumber); // opt1
 		return labels;
 	}
 	
