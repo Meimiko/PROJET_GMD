@@ -7,12 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import javax.print.DocFlavor.STRING;
-
-import org.apache.lucene.analysis.ar.ArabicAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
-
-import com.sun.jndi.url.iiopname.iiopnameURLContextFactory;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import Adaptators.Atc_Adaptator;
 import Adaptators.HP_Adaptator;
@@ -23,6 +19,7 @@ import Adaptators.Stitch_Adaptator;
 
 public class Mediator {
 
+	public static final String ANSI_PURPLE = "\u001B[35m";
 
 	static String host = "neptune.telecomnancy.univ-lorraine.fr";
 	static String db_server = "jdbc:mysql://" + host + ":3306/";
@@ -45,6 +42,9 @@ public class Mediator {
 			listOfSymptoms.add(sc2.next());
 		}
 		
+		
+		
+		
 		ArrayList<String> listOfDiseases= new ArrayList<String>();
 		ArrayList<String> diseasesTemp;
 		ArrayList<String> soloDisease=new ArrayList<String>();
@@ -62,14 +62,15 @@ public class Mediator {
 			listOfDiseases.addAll(diseasesTemp);
 		}
 		
-		final String ANSI_PURPLE = "\u001B[35m";
-		System.out.println("LISTE FINALE");
-		System.out.println(+listOfDiseases.size());
+		
+		System.out.println(ANSI_PURPLE+"LISTE FINALE");
+		
 		
 		for (String disease:listOfDiseases){
 			System.out.println(disease);
 		}
 		
+		System.out.println(+listOfDiseases.size());
 		//ArrayList<String> listOfDiseases= getDiseases(listOfSymptoms);
 		//ArrayList<String> listOfIndications = getIndications(listOfDiseases);
 		
@@ -101,6 +102,10 @@ public class Mediator {
 				}
 			}
 		}
+		
+		
+		
+		System.out.println("Nombre d'orphadiseases: "+listOfOrphaDiseases.size());
 
 		//OMIM request
 		OMIM_Adaptator OMIMadap;

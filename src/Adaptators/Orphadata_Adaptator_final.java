@@ -83,6 +83,15 @@ public class Orphadata_Adaptator_final {
 
 		String url = "http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseByClinicalSign?key=";
 
+		
+		char firstLetter =req.charAt(0);
+		int asciiFL = firstLetter;
+		if(asciiFL>96){
+			asciiFL=asciiFL-32;
+		}
+		firstLetter=(char) asciiFL;
+		req=firstLetter+req.substring(1);
+
 		req="%22"+req+"%22";
 		req=req.replaceAll(" ", "%20");
 		req=req.replaceAll("/", "%2F");
