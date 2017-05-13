@@ -209,7 +209,7 @@ public class HP_Adaptator {
 			    
 			    for (int j=0;j<HpoboName.size();j++){
 				    String line = HpoboName.get(j);
-				    Query query = parser.parse(line);  
+				    Query query = parser.parse("\""+line+"\"");  
 				    TopDocs results = searcher.search(query, 1000);
 				    //System.out.println("Nombre de resultat :"+results.totalHits);
 				    ScoreDoc[] hits = results.scoreDocs;
