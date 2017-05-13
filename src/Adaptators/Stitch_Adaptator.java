@@ -39,6 +39,9 @@ import org.apache.lucene.store.FSDirectory;
 
 public class Stitch_Adaptator {
 	
+	private int stitchCodeNumber=0; // opt1
+	private int atcCodeNumber=0; // opt1
+	
 	public static void main(String[] args) throws Exception {
 		//testReadATC();
 		
@@ -223,7 +226,7 @@ public class Stitch_Adaptator {
 				  System.out.println(e.toString());
 			  }
 		  }
-		  System.out.println(eltcount + " elements ont été ajouté à l'index ");
+		//  System.out.println(eltcount + " elements ont été ajouté à l'index ");
 	  }
 	
 	/**
@@ -254,6 +257,8 @@ public class Stitch_Adaptator {
 	    QueryParser parser = new QueryParser(field, analyzer);
 	    
 	    BufferedReader in = null;
+	    this.stitchCodeNumber=id_CUI.size(); // opt1 
+	    
 	    for (int j=0;j<id_CUI.size();j++){
 		    String line = id_CUI.get(j);
 	
@@ -261,15 +266,17 @@ public class Stitch_Adaptator {
 		    Query query = parser.parse(line);
 		    
 		    TopDocs results = searcher.search(query, 1000);
-		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entr�e :"+query);
+		    System.out.println("Number of results with the user search \""+query+"\" : "+results.totalHits); 
 		    ScoreDoc[] hits = results.scoreDocs;
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	labels.add(doc.get("atc_code"));
+		    	if (doc.get("atc_code")!=null){this.atcCodeNumber+=1;}
 		    	//System.out.println(doc.get("id_atc"));
-		    	System.out.println(doc.get("atc_code"));
 		    }
 	    }
+	    System.out.println("Number of Stitch source_code which match with the user search : "+this.stitchCodeNumber); // opt1 
+	    System.out.println("Number of Atc Code which match with the previous "+this.stitchCodeNumber+"Stitch source_code : "+this.atcCodeNumber); // opt1
 		return labels;
 	}
 	
