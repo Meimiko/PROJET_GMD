@@ -55,6 +55,7 @@ public class HP_Adaptator {
 		oboId.add("HP:0003142");
 		oboId.add("HP:0011120");
 		oboId.add("HP:0030f735");
+		oboId.add("HP:0000006");
 		new HP_Adaptator().oboIdToSqliteDiseaselabel(oboId);
 	}
 	
@@ -142,10 +143,16 @@ public class HP_Adaptator {
 									  content = content.substring("name:".length()+1);
 									  doc.add(new TextField("name",content,Field.Store.YES));
 								  }
-								  else if(line.startsWith("synonym:")){
-									  String content = line;
-									  content = content.substring("synonym:".length()+1);
-									  doc.add(new TextField("synonyms",content,Field.Store.YES));
+								  if(line.startsWith("synonym:")){
+									  String contentsyn="";
+									  while(line.startsWith("synonym:")){
+										  String content = line;
+										  content = content.substring("synonym:".length()+2);
+										  String[] contentTab = content.split("\"");
+										  contentsyn += contentTab[0]+";";									  
+										  line = br.readLine();
+									  }
+									  doc.add(new TextField("synonyms",contentsyn,Field.Store.YES));
 								  }
 								  else if(line.startsWith("xref:")){
 									  String content = line;
@@ -161,8 +168,7 @@ public class HP_Adaptator {
 								  if(line==null){ // to quit the while loop
 									  line="[Term]";
 								  }
-							  }
-						  
+							  }			  
 							  writer.addDocument(doc);
 						  }
 					  }				  
@@ -181,12 +187,29 @@ public class HP_Adaptator {
 			    Analyzer analyzer = new StandardAnalyzer();
 			    QueryParser parser = new QueryParser("name", analyzer);
 			    
+			  //synoym opt
+			    QueryParser synonymParser = new QueryParser("synonyms", analyzer); 
+			    
+			    //Synonyms opt
+			    int n=HpoboName.size();
+			    for (int j=0;j<n;j++){			    	
+			    	String name = HpoboName.get(j);
+			    	Query synonymQuery = synonymParser.parse(name);
+			    	TopDocs synonymresults = searcher.search(synonymQuery, 1000);
+			    	ScoreDoc[] synonymHits = synonymresults.scoreDocs;
+			    	Document synonymdoc = searcher.doc(synonymHits[0].doc);
+			    	String[] syno = synonymdoc.get("synonyms").split(";");
+			    	for (int i=0;i<syno.length;i++){
+			    		HpoboName.add(syno[i]);
+			    	}
+			    	System.out.println("Synonyms found for "+HpoboName.get(j)+" : "+synonymdoc.get("synonyms"));
+			    }
+			    
+			    	
+			    
 			    for (int j=0;j<HpoboName.size();j++){
 				    String line = HpoboName.get(j);
-			
-				    //line = line.trim();
-				    Query query = parser.parse(line);
-				    
+				    Query query = parser.parse(line);  
 				    TopDocs results = searcher.search(query, 1000);
 				    //System.out.println("Nombre de resultat :"+results.totalHits);
 				    ScoreDoc[] hits = results.scoreDocs;
@@ -194,11 +217,13 @@ public class HP_Adaptator {
 				    	Document doc = searcher.doc(hits[i].doc);
 				    	Ids.add(doc.get("ID"));
 				    	this.IDNumberOBO+=1; // opt1
-				    }
+				    	
+				    }			    
 			    }
 			    System.out.println("Number of HPO.Obo ID which match with the symptom name entered by the user : "+this.IDNumberOBO); // opt1
 				return Ids;
 			}
+		  
 		  
 		  public ArrayList<String> oboIdToSqliteDiseaselabel(ArrayList<String> oboId) throws IOException, ParseException, ClassNotFoundException, SQLException {
 				ArrayList<String> sqliteDiseaseLabel=new ArrayList<String>();
@@ -223,9 +248,7 @@ public class HP_Adaptator {
 				st.close();
 				con.close();
 				this.Sign_idSQLITE = sqlitesignid.size();
-				for (int k=0;k<oboId.size();k++){
-					System.out.println("Number of different HPOAnnotations.Sqlite sign_id corresponding to the "+this.IDNumberOBO+" HPO.Obo ID : "+this.Sign_idSQLITE); // opt1
-				}
+				System.out.println("Number of different HPOAnnotations.Sqlite sign_id corresponding to the "+this.IDNumberOBO+" HPO.Obo ID : "+this.Sign_idSQLITE); // opt1
 				return sqliteDiseaseLabel;
 			}
 
