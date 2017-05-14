@@ -47,9 +47,6 @@ public class OMIM_Adaptator {
 		ArrayList<String> signs=new ArrayList<String>();
 		signs.add("Follicular hyperkeratosis");
 		
-		
-		//Rajouter un lien où on utilise le csv ?
-		//csv.id_omim->csv.id_cui->stitch.cui   ?
 		omim.getFieldfromTXT("id_omim",signs);
 		omim.getFieldfromTXT("name/synonyms",signs);
 		
@@ -58,8 +55,7 @@ public class OMIM_Adaptator {
 	}
 	
 	/**
-	 * Constructeur qui lors de son initialisation, créer les index de omim csv et omim txt
-	 * Il suffit alors d'appeler les autres fonctions pour effectuer les recherches
+	 * Constructor of Omim's adaptator
 	 * @throws IOException
 	 */
 	public OMIM_Adaptator() throws IOException{
@@ -68,24 +64,12 @@ public class OMIM_Adaptator {
 		
 	}
 	
-	public void SearchIntoCSV(String queryField){
-		try {
-			SearchElement("index_omim_csv",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public void SearchIntoTXT(String queryField){
-		try {
-			SearchElement("index_omim_txt",queryField,"id_omim");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
+	/**
+	 * Create a index from OMIM's document
+	 * @param docsPath The OMIM's path
+	 * @param indexPath The path of the index which will be create
+	 */
  	private static void CreateIndex(String docsPath,String indexPath) {
 	    boolean create = true;
 
@@ -112,13 +96,6 @@ public class OMIM_Adaptator {
 	        iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 	      }
 
-	      // Optional: for better indexing performance, if you
-	      // are indexing many documents, increase the RAM
-	      // buffer.  But if you do this, increase the max heap
-	      // size to the JVM (eg add -Xmx512m or -Xmx1g):
-	      //
-	      // iwc.setRAMBufferSizeMB(256.0);
-
 	      IndexWriter writer = new IndexWriter(dir, iwc);
 	      
 	      //indexDocs(writer, docDir);
@@ -126,16 +103,7 @@ public class OMIM_Adaptator {
 	    	  indexDocTxt(writer, new File(docDir.toString()));
 	      else if (docsPath.endsWith("csv"))
 	    	  indexDocCsv(writer, new File(docDir.toString()));
-	    	  
-
-	      // NOTE: if you want to maximize search performance,
-	      // you can optionally call forceMerge here.  This can be
-	      // a terribly costly operation, so generally it's only
-	      // worth it when your index is relatively static (ie
-	      // you're done adding documents to it):
-	      //
-	      // writer.forceMerge(1);
-
+	    
 	      writer.close();
 
 	      Date end = new Date();
@@ -147,6 +115,12 @@ public class OMIM_Adaptator {
 	    }
 	  }
 	
+ 	/**
+	 * Used to create the OMIM's index from txt file in CreateIndex()
+	 * @param writer
+	 * @param file
+	 * @throws IOException
+	 */
 	private static void indexDocTxt(IndexWriter writer, File file) throws IOException {
 		  int eltcount = 0;
 		  if (file.canRead() && !file.isDirectory()){
@@ -186,6 +160,12 @@ public class OMIM_Adaptator {
 		  System.out.println(eltcount + " elements ont Ã©tÃ© ajoutÃ© Ã  l'index ");
 	  }
 
+	/**
+	 * Used to create the OMIM's index from csv file in CreateIndex()
+	 * @param writer
+	 * @param file
+	 * @throws IOException
+	 */
 	private static void indexDocCsv(IndexWriter writer, File file) throws IOException {
 		  int eltcount = 0;
 		  if (file.canRead() && !file.isDirectory()){
@@ -239,7 +219,14 @@ public class OMIM_Adaptator {
 	  }
 	
 	
-	//
+	/**
+	 * Get list of omim's id from a list of clinical signs
+	 * @param getField The field where search is done
+	 * @param signs List of clinical's signs
+	 * @return The list of omim's id
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	public ArrayList<String> getFieldfromTXT(String getField,ArrayList<String> signs) throws IOException, ParseException{
 		ArrayList<String> ids_omim=new ArrayList<String>();
 		
@@ -255,10 +242,10 @@ public class OMIM_Adaptator {
 		    String line = signs.get(j);
 	
 		    //line = line.trim();
-		    Query query = parser.parse("\""+line+"\"");
+		    Query query = parser.parse(line);
 		    
 		    TopDocs results = searcher.search(query, 10000);
-		    System.err.println("Nombre de resultat OMIMs:"+results.totalHits +" pour l'entrée :"+query);
+		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entrée :"+query);
 		    ScoreDoc[] hits = results.scoreDocs;
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
@@ -270,167 +257,4 @@ public class OMIM_Adaptator {
 		
 	}
 	
-	
-	private static void SearchElement(String indexPath, String Searchfield,String idField) throws Exception {
-
-	    String index = indexPath;
-	    String field = Searchfield;
-	    String queries = null;
-	    int repeat = 0;
-	    boolean raw = false;
-	    String queryString = null;
-	    int hitsPerPage = 10;
-	    
-	    IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(index)));
-	    IndexSearcher searcher = new IndexSearcher(reader);
-	    Analyzer analyzer = new StandardAnalyzer();
-
-	    BufferedReader in = null;
-	    if (queries != null) {
-	      in = Files.newBufferedReader(Paths.get(queries), StandardCharsets.UTF_8);
-	    } else {
-	      in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-	    }
-	    QueryParser parser = new QueryParser(field, analyzer);
-	    while (true) {
-	      if (queries == null && queryString == null) {                        // prompt the user
-	        System.out.println("Enter query: ");
-	      }
-
-	      String line = queryString != null ? queryString : in.readLine();
-
-	      if (line == null || line.length() == -1) {
-	        break;
-	      }
-
-	      line = line.trim();
-	      if (line.length() == 0) {
-	        break;
-	      }
-	      
-	      Query query = parser.parse(line);
-	      System.out.println("Searching for: " + query.toString(field));
-	            
-	      if (repeat > 0) {                           // repeat & time as benchmark
-	        Date start = new Date();
-	        for (int i = 0; i < repeat; i++) {
-	          searcher.search(query, 100);
-	        }
-	        Date end = new Date();
-	        System.out.println("Time: "+(end.getTime()-start.getTime())+"ms");
-	      }
-
-	      doPagingSearch(in, searcher, query, hitsPerPage, raw, queries == null && queryString == null,idField,field);
-
-	      if (queryString != null) {
-	        break;
-	      }
-	    }
-	    reader.close();
-	  }
-
-	  /**
-	   * This demonstrates a typical paging search scenario, where the search engine presents 
-	   * pages of size n to the user. The user can then go to the next page if interested in
-	   * the next hits.
-	   * 
-	   * When the query is executed for the first time, then only enough results are collected
-	   * to fill 5 result pages. If the user wants to page beyond this limit, then the query
-	   * is executed another time and all hits are collected.
-	   * 
-	   */
-	private static void doPagingSearch(BufferedReader in, IndexSearcher searcher, Query query, 
-	                                     int hitsPerPage, boolean raw, boolean interactive,
-	                                     String idField,String queryField) throws IOException {
-	 
-	    // Collect enough docs to show 5 pages
-	    TopDocs results = searcher.search(query, 5 * hitsPerPage);
-	    ScoreDoc[] hits = results.scoreDocs;
-	    
-	    int numTotalHits = results.totalHits;
-	    System.out.println(numTotalHits + " total matching documents");
-
-	    int start = 0;
-	    int end = Math.min(numTotalHits, hitsPerPage);
-	        
-	    while (true) {
-	      if (end > hits.length) {
-	        System.out.println("Only results 1 - " + hits.length +" of " + numTotalHits + " total matching documents collected.");
-	        System.out.println("Collect more (y/n) ?");
-	        String line = in.readLine();
-	        if (line.length() == 0 || line.charAt(0) == 'n') {
-	          break;
-	        }
-
-	        hits = searcher.search(query, numTotalHits).scoreDocs;
-	      }
-	      
-	      end = Math.min(hits.length, start + hitsPerPage);
-	      
-	      for (int i = start; i < end; i++) {
-	        if (raw) {                              // output raw format
-	          System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
-	          continue;
-	        }
-
-	        Document doc = searcher.doc(hits[i].doc);
-	        String id = doc.get(idField);
-	        if (id != null) {
-	          System.out.println((i+1) + ". " + id);
-	          String field = doc.get(queryField);
-	          if (field != null) {
-	            System.out.println("   "+queryField+": " + doc.get(queryField));
-	          }
-	        } else {
-	          System.out.println((i+1) + ". " + "No drug for this search");
-	        }
-	                  
-	      }
-
-	      if (!interactive || end == 0) {
-	        break;
-	      }
-	      if (numTotalHits >= end) {
-	        boolean quit = false;
-	        while (true) {
-	          System.out.print("Press ");
-	          if (start - hitsPerPage >= 0) {
-	            System.out.print("(p)revious page, ");  
-	          }
-	          if (start + hitsPerPage < numTotalHits) {
-	            System.out.print("(n)ext page, ");
-	          }
-	          System.out.println("(q)uit or enter number to jump to a page.");
-	          
-	          String line = in.readLine();
-	          if (line.length() == 0 || line.charAt(0)=='q') {
-	            quit = true;
-	            break;
-	          }
-	          if (line.charAt(0) == 'p') {
-	            start = Math.max(0, start - hitsPerPage);
-	            break;
-	          } else if (line.charAt(0) == 'n') {
-	            if (start + hitsPerPage < numTotalHits) {
-	              start+=hitsPerPage;
-	            }
-	            break;
-	          } else {
-	            int page = Integer.parseInt(line);
-	            if ((page - 1) * hitsPerPage < numTotalHits) {
-	              start = (page - 1) * hitsPerPage;
-	              break;
-	            } else {
-	              System.out.println("No such page");
-	            }
-	          }
-	        }
-	        if (quit) break;
-	        end = Math.min(numTotalHits, start + hitsPerPage);
-	      }
-	    }
-	  }
-	
-	
-
 }

@@ -55,36 +55,21 @@ public class Atc_Adaptator {
 		
 	}
 	
-	
+	/**
+	 * Constructor of Atc's adaptator
+	 */
 	public Atc_Adaptator(){
-		CreateIndex("E:/IAMD/GMD/Projet/Projet/Donn�es/atc/br08303.keg","index_atc");
+		CreateIndex("E:/IAMD/GMD/Projet/Projet/Donn馥s/atc/br08303.keg","index_atc");
 	}
 	
-	public static void testSider() throws IOException{
-		BufferedReader flotFiltre;
-		String filtre;
-		flotFiltre = new BufferedReader(new FileReader("sider.txt"));
-		filtre=flotFiltre.readLine();
-		BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testSider.txt")));
-		int cmpt=0;
-		String buff="";
-		while(filtre!=null){
-			if (filtre.startsWith("CID1")){
-				if (!filtre.substring(4,13).equals(buff))
-					cmpt++;
-				buff=filtre.substring(4,13);
-			}
-			filtre=flotFiltre.readLine();
-		}
-		System.out.println(cmpt);
-		
-	}
-	
-	//NB : ATC 3386 elements dans les 3386 premieres lignes
+	/**
+	 * Function which was use to test how to parse ATC's document.
+	 * @throws IOException
+	 */
 		public static void testReadATC() throws IOException{
 			BufferedReader flotFiltre;
 			String filtre;
-			flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Donn�es/atc/br08303.keg"));
+			flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Donn馥s/atc/br08303.keg"));
 			filtre=flotFiltre.readLine();
 			BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testAtc.keg")));
 			int cmpt=0;
@@ -105,8 +90,13 @@ public class Atc_Adaptator {
 			flotFiltre.close();
 			
 		}
-	
-	private static void CreateIndex(String docsPath,String indexPath) {
+
+	/**
+	 * Create a index from ATC's document
+	 * @param docsPath The ATC's path
+	 * @param indexPath The path of the index which will be create
+	 */
+	 private static void CreateIndex(String docsPath,String indexPath) {
 	    boolean create = true;
 
 	    final Path docDir = Paths.get(docsPath);
@@ -164,7 +154,13 @@ public class Atc_Adaptator {
 	    }
 	  }
 	
-	private static void indexDoc(IndexWriter writer, File file) throws IOException {
+ 	/**
+	 * Used to create the Atc's index in CreateIndex()
+	 * @param writer
+	 * @param file
+	 * @throws IOException
+	 */
+	 private static void indexDoc(IndexWriter writer, File file) throws IOException {
 		  int eltcount = 0;
 		  if (file.canRead() && !file.isDirectory()){
 			  try{
@@ -191,13 +187,13 @@ public class Atc_Adaptator {
 				  System.out.println(e.toString());
 			  }
 		  }
-		  System.out.println(eltcount + " elements ont été ajouté à l'index ");
+		  System.out.println(eltcount + " elements ont ﾃｩtﾃｩ ajoutﾃｩ ﾃ� l'index ");
 	  }
 	
-	/**
-	 * Permet d'obtenir la liste des labels des medicament correspondants aux id_atc donn�s en entr�e
-	 * @param ids_atc
-	 * @return
+	 /**
+	 * Get drug's Label corresponding to atc's id
+	 * @param ids_atc List of atc's id
+	 * @return List of drug's label
 	 * @throws IOException
 	 * @throws ParseException
 	 */
@@ -228,167 +224,5 @@ public class Atc_Adaptator {
 	    }
 		return labels;
 	}
-	
-	
-	//Plus trop utile maintenant...
-	private static void SearchElement(String indexPath, String Searchfield,String idField) throws Exception {
-
-	    String index = indexPath;
-	    String field = Searchfield;
-	    String queries = null;
-	    int repeat = 0;
-	    boolean raw = false;
-	    String queryString = null;
-	    int hitsPerPage = 10;
-	    
-	    IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(index)));
-	    IndexSearcher searcher = new IndexSearcher(reader);
-	    Analyzer analyzer = new StandardAnalyzer();
-
-	    BufferedReader in = null;
-	    if (queries != null) {
-	      in = Files.newBufferedReader(Paths.get(queries), StandardCharsets.UTF_8);
-	    } else {
-	      in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-	    }
-	    QueryParser parser = new QueryParser(field, analyzer);
-	    while (true) {
-	      if (queries == null && queryString == null) {                        // prompt the user
-	        System.out.println("Enter query: ");
-	      }
-
-	      String line = queryString != null ? queryString : in.readLine();
-
-	      if (line == null || line.length() == -1) {
-	        break;
-	      }
-
-	      line = line.trim();
-	      if (line.length() == 0) {
-	        break;
-	      }
-	      
-	      Query query = parser.parse(line);
-	      System.out.println("Searching for: " + query.toString(field));
-	            
-	      if (repeat > 0) {                           // repeat & time as benchmark
-	        Date start = new Date();
-	        for (int i = 0; i < repeat; i++) {
-	          searcher.search(query, 100);
-	        }
-	        Date end = new Date();
-	        System.out.println("Time: "+(end.getTime()-start.getTime())+"ms");
-	      }
-
-	      doPagingSearch(in, searcher, query, hitsPerPage, raw, queries == null && queryString == null,idField,field);
-
-	      if (queryString != null) {
-	        break;
-	      }
-	    }
-	    reader.close();
-	  }
-
-	  /**
-	   * This demonstrates a typical paging search scenario, where the search engine presents 
-	   * pages of size n to the user. The user can then go to the next page if interested in
-	   * the next hits.
-	   * 
-	   * When the query is executed for the first time, then only enough results are collected
-	   * to fill 5 result pages. If the user wants to page beyond this limit, then the query
-	   * is executed another time and all hits are collected.
-	   * 
-	   */
-	private static void doPagingSearch(BufferedReader in, IndexSearcher searcher, Query query, 
-	                                     int hitsPerPage, boolean raw, boolean interactive,
-	                                     String idField,String queryField) throws IOException {
-	 
-	    // Collect enough docs to show 5 pages
-	    TopDocs results = searcher.search(query, 5 * hitsPerPage);
-	    ScoreDoc[] hits = results.scoreDocs;
-	    
-	    int numTotalHits = results.totalHits;
-	    System.out.println(numTotalHits + " total matching documents");
-
-	    int start = 0;
-	    int end = Math.min(numTotalHits, hitsPerPage);
-	        
-	    while (true) {
-	      if (end > hits.length) {
-	        System.out.println("Only results 1 - " + hits.length +" of " + numTotalHits + " total matching documents collected.");
-	        System.out.println("Collect more (y/n) ?");
-	        String line = in.readLine();
-	        if (line.length() == 0 || line.charAt(0) == 'n') {
-	          break;
-	        }
-
-	        hits = searcher.search(query, numTotalHits).scoreDocs;
-	      }
-	      
-	      end = Math.min(hits.length, start + hitsPerPage);
-	      
-	      for (int i = start; i < end; i++) {
-	        if (raw) {                              // output raw format
-	          System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
-	          continue;
-	        }
-
-	        Document doc = searcher.doc(hits[i].doc);
-	        String id = doc.get(idField);
-	        if (id != null) {
-	          System.out.println((i+1) + ". " + id);
-	          String field = doc.get(queryField);
-	          if (field != null) {
-	            System.out.println("   "+queryField+": " + doc.get(queryField));
-	          }
-	        } else {
-	          System.out.println((i+1) + ". " + "No drug for this search");
-	        }
-	                  
-	      }
-
-	      if (!interactive || end == 0) {
-	        break;
-	      }
-	      if (numTotalHits >= end) {
-	        boolean quit = false;
-	        while (true) {
-	          System.out.print("Press ");
-	          if (start - hitsPerPage >= 0) {
-	            System.out.print("(p)revious page, ");  
-	          }
-	          if (start + hitsPerPage < numTotalHits) {
-	            System.out.print("(n)ext page, ");
-	          }
-	          System.out.println("(q)uit or enter number to jump to a page.");
-	          
-	          String line = in.readLine();
-	          if (line.length() == 0 || line.charAt(0)=='q') {
-	            quit = true;
-	            break;
-	          }
-	          if (line.charAt(0) == 'p') {
-	            start = Math.max(0, start - hitsPerPage);
-	            break;
-	          } else if (line.charAt(0) == 'n') {
-	            if (start + hitsPerPage < numTotalHits) {
-	              start+=hitsPerPage;
-	            }
-	            break;
-	          } else {
-	            int page = Integer.parseInt(line);
-	            if ((page - 1) * hitsPerPage < numTotalHits) {
-	              start = (page - 1) * hitsPerPage;
-	              break;
-	            } else {
-	              System.out.println("No such page");
-	            }
-	          }
-	        }
-	        if (quit) break;
-	        end = Math.min(numTotalHits, start + hitsPerPage);
-	      }
-	    }
-	  }
 
 }
