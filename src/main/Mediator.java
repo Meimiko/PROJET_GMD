@@ -34,49 +34,85 @@ public class Mediator {
 	static String login = "gmd-read";
 	static String pwd = "esial";
 
+	ArrayList<String> finalListOfDiseases;
+	ArrayList<String> listOfIndications; 
+	ArrayList<String> listOfTreatments; 
+	ArrayList<String> listOfSideEffects;
+
+
+
 	public static void main(String[] args) throws ClassNotFoundException, IOException, ParseException, SQLException, Exception {
 		System.out.println("Entrez un symptome");
-		
+
 		Scanner sc;
 		sc = new Scanner(System.in);
-		
+
 		String entry=sc.nextLine();
+
+
+		//ArrayList<String> finalListOfDiseases= getDiseases(listOfSymptoms);
+		// Renvoie une liste de maladies (liste de symptomes en entrée)
 		
+		
+		//ArrayList<String> listOfIndications = getIndications(finalListOfDiseases);
+		// Renvoie une liste de médicaments pour les maladies (liste de maladies en entrée)
+		
+		//ArrayList<String> listOfTreatments = getTreatments(finalListOfSymptoms);
+		//Renvoie une liste de médicaments pour les symptomes (liste de symptomes en entrée)
+		
+		//ArrayList<String> listOfSideEffects = getSideEffects(finalListOfSymptoms);
+		//Renvoie une liste de médicaments pouvant causer les symptomes (liste de symptomes en entrée)
+	}
+
+
+	
+	/**
+	 * 
+	 * Renvoie toutes les maladies correspondant aux symptomes entrés (en gérant les "&" et les "," )
+	 * 
+	 * @param entry
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws Exception
+	 */
+	public static ArrayList<String> getAllDiseases(String entry) throws ClassNotFoundException, IOException, ParseException, Exception{
 		ArrayList<String> listOfRequests = new ArrayList<String>();
-		
+
 		Scanner or = new Scanner(entry);
 		or.useDelimiter(",");
 		while(or.hasNext()){
 			listOfRequests.add(or.next());
 		}
-		
+
 		for(String request:listOfRequests){
 			System.err.println(request);
 		}
-		
+
 		Scanner and;
-		
-		
+
+
 		ArrayList<String> listOfDiseasesTemp= new ArrayList<String>();
 		ArrayList<String> diseasesTemp;
 		String soloDisease;
 		ArrayList<String> listOfSymptoms;
 		ArrayList<String> finalListOfDiseases = new ArrayList<String>();
-		
+
 		for (int j=0;j<listOfRequests.size();j++){
-		
+
 			and=new Scanner(listOfRequests.get(j));
 			and.useDelimiter("&");
 			listOfSymptoms=new ArrayList<String>();
-			
+
 			while(and.hasNext()){
 				listOfSymptoms.add(and.next());
 			}
 			soloDisease=listOfSymptoms.get(0);
-			
+
 			listOfDiseasesTemp=getDiseases(soloDisease);
 			listOfSymptoms.remove(0);
-			
+
 			for (String symptom:listOfSymptoms){
 				System.err.println("DANS LE FOR");
 				soloDisease=symptom;
@@ -84,9 +120,9 @@ public class Mediator {
 				listOfDiseasesTemp= new ArrayList<String>();
 				listOfDiseasesTemp.addAll(diseasesTemp);
 			}
-			
+
 			System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-			
+
 			if (j==0){
 				finalListOfDiseases.addAll(listOfDiseasesTemp);
 			}
@@ -94,35 +130,181 @@ public class Mediator {
 				finalListOfDiseases=orJoint(finalListOfDiseases, listOfDiseasesTemp);
 			}
 		}
-		
 
-		
-		
-		
-
-		
 		System.out.println("LISTE FINALE");
-		
-		
+
+
 		for (String disease:finalListOfDiseases){
 			System.out.println(disease);
 		}
-		
+
 		System.out.println(finalListOfDiseases.size());
-		//ArrayList<String> listOfDiseases= getDiseases(listOfSymptoms);
-		//ArrayList<String> listOfIndications = getIndications(listOfDiseases);
 		
-		//ArrayList<String> listOfTreatments = getTreatments(listOfSymptoms);
-		//ArrayList<String> listOfSideEffects = getSideEffects(listOfSymptoms);
-		
+		return finalListOfDiseases;
 	}
 
+	
+	/**
+	 * Renvoie tous les traitements correspondant aux symptomes entrés (en gérant les "&" et les "," )
+	 * 
+	 * @param entry
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws Exception
+	 */
+	public static ArrayList<String> getAllTreatments(String entry) throws ClassNotFoundException, IOException, ParseException, Exception{
+		ArrayList<String> listOfRequests = new ArrayList<String>();
 
+		Scanner or = new Scanner(entry);
+		or.useDelimiter(",");
+		while(or.hasNext()){
+			listOfRequests.add(or.next());
+		}
+
+		for(String request:listOfRequests){
+			System.err.println(request);
+		}
+
+		Scanner and;
+
+
+		ArrayList<String> listOfTreatmentsTemp= new ArrayList<String>();
+		ArrayList<String> TreatmentsTemp;
+		String soloTreatment;
+		ArrayList<String> listOfSymptoms;
+		ArrayList<String> finalListOfTreatments = new ArrayList<String>();
+
+		for (int j=0;j<listOfRequests.size();j++){
+
+			and=new Scanner(listOfRequests.get(j));
+			and.useDelimiter("&");
+			listOfSymptoms=new ArrayList<String>();
+
+			while(and.hasNext()){
+				listOfSymptoms.add(and.next());
+			}
+			soloTreatment=listOfSymptoms.get(0);
+
+			listOfTreatmentsTemp=getTreatments(soloTreatment);
+			listOfSymptoms.remove(0);
+
+			for (String symptom:listOfSymptoms){
+				System.err.println("DANS LE FOR");
+				soloTreatment=symptom;
+				TreatmentsTemp=andJoint(listOfTreatmentsTemp,getTreatments(soloTreatment));
+				listOfTreatmentsTemp= new ArrayList<String>();
+				listOfTreatmentsTemp.addAll(TreatmentsTemp);
+			}
+
+			System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+			if (j==0){
+				finalListOfTreatments.addAll(listOfTreatmentsTemp);
+			}
+			else{
+				finalListOfTreatments=orJoint(finalListOfTreatments, listOfTreatmentsTemp);
+			}
+		}
+
+		System.out.println("LISTE FINALE");
+
+
+		for (String Treatment:finalListOfTreatments){
+			System.out.println(Treatment);
+		}
+
+		System.out.println(finalListOfTreatments.size());
+		
+		return finalListOfTreatments;
+	}
+	
+	
+	/**
+	 * 
+	 * Renvoie tous les medicaments pouvant causer les symptomes entrés (en gérant les "&" et les "," )
+	 * 
+	 * @param entry
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws Exception
+	 */
+	
+	public static ArrayList<String> getAllSideEffects(String entry) throws ClassNotFoundException, IOException, ParseException, Exception{
+		ArrayList<String> listOfRequests = new ArrayList<String>();
+
+		Scanner or = new Scanner(entry);
+		or.useDelimiter(",");
+		while(or.hasNext()){
+			listOfRequests.add(or.next());
+		}
+
+		for(String request:listOfRequests){
+			System.err.println(request);
+		}
+
+		Scanner and;
+
+
+		ArrayList<String> listOfSideEffectsTemp= new ArrayList<String>();
+		ArrayList<String> SideEffectsTemp;
+		String soloSideEffect;
+		ArrayList<String> listOfSymptoms;
+		ArrayList<String> finalListOfSideEffects = new ArrayList<String>();
+
+		for (int j=0;j<listOfRequests.size();j++){
+
+			and=new Scanner(listOfRequests.get(j));
+			and.useDelimiter("&");
+			listOfSymptoms=new ArrayList<String>();
+
+			while(and.hasNext()){
+				listOfSymptoms.add(and.next());
+			}
+			soloSideEffect=listOfSymptoms.get(0);
+
+			listOfSideEffectsTemp=getSideEffects(soloSideEffect);
+			listOfSymptoms.remove(0);
+
+			for (String symptom:listOfSymptoms){
+				System.err.println("DANS LE FOR");
+				soloSideEffect=symptom;
+				SideEffectsTemp=andJoint(listOfSideEffectsTemp,getSideEffects(soloSideEffect));
+				listOfSideEffectsTemp= new ArrayList<String>();
+				listOfSideEffectsTemp.addAll(SideEffectsTemp);
+			}
+
+			System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+			if (j==0){
+				finalListOfSideEffects.addAll(listOfSideEffectsTemp);
+			}
+			else{
+				finalListOfSideEffects=orJoint(finalListOfSideEffects, listOfSideEffectsTemp);
+			}
+		}
+
+		System.out.println("LISTE FINALE");
+
+
+		for (String SideEffect:finalListOfSideEffects){
+			System.out.println(SideEffect);
+		}
+
+		System.out.println(finalListOfSideEffects.size());
+		
+		return finalListOfSideEffects;
+	}
+	
+	
 	public static ArrayList<String> getDiseases(String symptom) throws Exception,ClassNotFoundException, IOException, ParseException, SQLException {
 
 		ArrayList<String> listOfSymptoms = new ArrayList<String>();
 		listOfSymptoms.add(symptom);
-		
+
 		//HP request
 
 		HP_Adaptator HPadap = new HP_Adaptator();
@@ -130,18 +312,18 @@ public class Mediator {
 		listOfHPDiseases = HPadap.oboIdToSqliteDiseaselabel(HPadap.nameToId(listOfSymptoms));
 
 		System.err.println("List of Hp diseases :" + listOfHPDiseases.size());
-		
+
 		//Orphadatabase request
-		
+
 		Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
 		ArrayList<String>listOfOrphaDiseases = Orphaadap.clinicalSignToDisease(symptom);
 
 		/*Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
 		ArrayList<String>listOfOrphaDiseases=new ArrayList<String>();
 		ArrayList<String>orphadiseasesTemp;
-		
-		
-		
+
+
+
 		for (String symptom:listOfSymptoms){
 			orphadiseasesTemp = Orphaadap.clinicalSignToDisease(symptom);
 			for (String orphadiseaseTemp:orphadiseasesTemp){
@@ -150,9 +332,9 @@ public class Mediator {
 				}
 			}
 		}*/
-		
-		
-		
+
+
+
 		System.out.println("Nombre d'orphadiseases: "+listOfOrphaDiseases.size());
 
 		//OMIM request
@@ -175,20 +357,20 @@ public class Mediator {
 			}
 		}
 
-		
+
 		for (String disease: listOfDiseases){
 			System.out.println(disease);
 		}
-		
+
 		return (listOfDiseases);
-		
+
 
 
 	}
-	
+
 	public static ArrayList<String> andJoint(ArrayList<String> listA, ArrayList<String> listB){
 		ArrayList<String> jointList = new ArrayList<String>();
-		
+
 		for (String element:listA){
 			if (listB.contains(element)) {
 				jointList.add(element);
@@ -196,12 +378,12 @@ public class Mediator {
 		}
 		return(jointList);
 	}
-	
-	
+
+
 	public static ArrayList<String> orJoint(ArrayList<String> listA, ArrayList<String> listB){
 		ArrayList<String> jointList = new ArrayList<String>();
 		jointList.addAll(listA);
-		
+
 		for (String element:listB){
 			if(!jointList.contains(element)){
 				jointList.add(element);
@@ -209,7 +391,19 @@ public class Mediator {
 		}
 		return jointList;
 	}
+
 	
+	/**
+	 * 
+	 * renvoie les indications correspondant aux maladies entréess
+	 * 
+	 * @param listOfDiseases
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	public static ArrayList<String> getIndications(ArrayList<String> listOfDiseases) throws ClassNotFoundException, SQLException, IOException, ParseException{
 		ArrayList<String> Ids = new ArrayList<String>();
 		Class.forName(driver);
@@ -246,12 +440,15 @@ public class Mediator {
 			}
 		}
 		System.out.println("listOfIndicationsFinal: "+listOfIndicationsFinal.size());
-		
+
 		return listOfIndicationsFinal;
 	}
-	
-	
-	public static ArrayList<String> getTreatments(ArrayList<String> listOfSymptoms) throws ClassNotFoundException, SQLException, IOException, ParseException{
+
+
+	public static ArrayList<String> getTreatments(String symptom) throws ClassNotFoundException, SQLException, IOException, ParseException{
+		ArrayList<String> listOfSymptoms = new ArrayList<String>();
+		listOfSymptoms.add(symptom);
+		
 		ArrayList<String> Ids = new ArrayList<String>();
 		Class.forName(driver);
 		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
@@ -287,12 +484,15 @@ public class Mediator {
 			}
 		}
 		System.out.println("listOfTreatmentsFinal: "+listOfTreatmentsFinal.size());
-		
+
 		return listOfTreatmentsFinal;
 	}
-	
-	
-	public static ArrayList<String> getSideEffects(ArrayList<String> listOfSymptoms) throws ClassNotFoundException, SQLException, IOException, ParseException {
+
+
+	public static ArrayList<String> getSideEffects(String symptom) throws ClassNotFoundException, SQLException, IOException, ParseException {
+		ArrayList<String> listOfSymptoms = new ArrayList<String>();
+		listOfSymptoms.add(symptom);
+		
 		ArrayList<String> SEIds = new ArrayList<String>();
 		Class.forName(driver);
 		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
@@ -328,10 +528,10 @@ public class Mediator {
 			}
 		}
 		System.out.println("listOfSideEffectsFinal: "+listOfSideEffectsFinal.size());
-		
+
 		return listOfSideEffectsFinal;
 	}
-	
+
 }
 
 
