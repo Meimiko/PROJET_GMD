@@ -68,15 +68,15 @@
                   </ScrollPane>
                   <ScrollPane prefHeight="480.0" prefWidth="640.0">
                     <content>
-                      <AnchorPane fx:id="anchorResultDisease" prefHeight="1080.0" prefWidth="960.0">
+                      <AnchorPane fx:id="anchorResultDisease" prefHeight="200.0" prefWidth="920.0">
                            <children>
-                              <Label fx:id="resultDisease" alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="1080.0" prefWidth="1920.0" text="Salut les gens :)" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Label fx:id="resultDisease" alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="1080.0" prefWidth="1920.0" text="Salut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop contentSalut les gens :) je suis trop content" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#ShowDrugDisease" text="Show Drugs to treat Disease" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#ShowDrugSE" text="Show Drugs to treat Side Effect" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <Button fx:id="buttonDisease" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#ShowDrugDisease" text="Show Drugs to treat Disease" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <Button fx:id="buttonSE" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#ShowDrugSE" text="Show Drugs to treat Side Effect" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
