@@ -29,7 +29,7 @@ public class MediatorBis {
 	ArrayList<String> listOfIndications; 
 	ArrayList<String> listOfTreatments; 
 	ArrayList<String> listOfSideEffects;
-	
+
 	static Stitch_Adaptator Stitchadap = new Stitch_Adaptator();
 	static SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator();
 	static Atc_Adaptator Atcadap = new Atc_Adaptator();
@@ -37,49 +37,17 @@ public class MediatorBis {
 	static OMIM_Adaptator OMIMadap;
 
 
-	//mettre con en static?
-	
-
 	public static void main(String[] args) throws ClassNotFoundException, IOException, ParseException, SQLException, Exception {
 		System.out.println("Entrez un symptome");
-
 		Scanner sc;
 		sc = new Scanner(System.in);
-
-		String entry=sc.nextLine();
-		
-		/*Stitch_Adaptator Stitchadap = new Stitch_Adaptator();
-		SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator();
-		Atc_Adaptator Atcadap = new Atc_Adaptator();
-		HP_Adaptator HPadap = new HP_Adaptator();
-		OMIM_Adaptator OMIMadap = new OMIM_Adaptator();*/
-		
-		//methode if si entry a une * !!!
-
-		/*ArrayList<Disease> allDiseases = getAllDiseases(entry);
-		getAllIndications(allDiseases);*/
-		
+		String entry=sc.nextLine();	
 		getAllTreatments(entry);
-		
-		//ArrayList<String> finalListOfDiseases= getDiseases(listOfSymptoms);
-		// Renvoie une liste de maladies (liste de symptomes en entrée)
-
-
-		//ArrayList<String> listOfIndications = getIndications(finalListOfDiseases);
-		// Renvoie une liste de médicaments pour les maladies (liste de maladies en entrée)
-
-		//ArrayList<String> listOfTreatments = getTreatments(finalListOfSymptoms);
-		//Renvoie une liste de médicaments pour les symptomes (liste de symptomes en entrée)
-
-		//ArrayList<String> listOfSideEffects = getSideEffects(finalListOfSymptoms);
-		//Renvoie une liste de médicaments pouvant causer les symptomes (liste de symptomes en entrée)
+		sc.close();
 	}
 
-
-
 	/**
-	 * 
-	 * Renvoie toutes les maladies correspondant aux symptomes entrés (en gérant les "&" et les "," )
+	 * Get all the disease corresponding to the symptoms entered by the user ("&" and "," are operational)
 	 * 
 	 * @param entry
 	 * @return
@@ -96,13 +64,8 @@ public class MediatorBis {
 		while(or.hasNext()){
 			listOfRequests.add(or.next());
 		}
-
-		/*for(String request:listOfRequests){
-			System.err.println(request);
-		}*/
-
+		or.close();
 		Scanner and;
-
 		ArrayList<Disease> listOfDiseasesTemp= new ArrayList<Disease>();
 		ArrayList<Disease> diseasesTemp;
 		String soloSymptom;
@@ -141,9 +104,9 @@ public class MediatorBis {
 			}
 		}
 
-		System.out.println("LISTE FINALE");
+		System.out.println("FINAL LIST");
 
-		
+
 		for (Disease disease:finalListOfDiseases){
 			System.out.print(disease.getDiseaseName());
 			if (disease.isHPO())
@@ -154,15 +117,13 @@ public class MediatorBis {
 				System.out.print(" ; Orphadata");
 			System.out.println();
 		}
-
 		System.out.println(finalListOfDiseases.size());
-
 		return finalListOfDiseases;
 	}
 
 
 	/**
-	 * Renvoie tous les traDiseaseents correspondant aux symptomes entrés (en gérant les "&" et les "," )
+	 * Get all the treatments corresponding to the symptoms entered by the user ("&" and "," are operational)
 	 * 
 	 * @param entry
 	 * @return
@@ -179,14 +140,12 @@ public class MediatorBis {
 		while(or.hasNext()){
 			listOfRequests.add(or.next());
 		}
-
+		or.close();
 		for(String request:listOfRequests){
 			System.err.println(request);
 		}
 
 		Scanner and;
-
-
 		ArrayList<Drug> listOfTreatmentsTemp= new ArrayList<Drug>();
 		ArrayList<Drug> TreatmentsTemp;
 		String soloTreatment;
@@ -208,7 +167,7 @@ public class MediatorBis {
 			listOfSymptoms.remove(0);
 
 			for (String symptom:listOfSymptoms){
-				System.err.println("DANS LE FOR");
+				System.err.println("IN THE FOR LOOP");
 				soloTreatment=symptom;
 				TreatmentsTemp=andJointDrug(listOfTreatmentsTemp,getTreatments(soloTreatment));
 				listOfTreatmentsTemp= new ArrayList<Drug>();
@@ -225,9 +184,9 @@ public class MediatorBis {
 			}
 		}
 
-		System.out.println("LISTE FINALE");
+		System.out.println("FINAL LIST");
 
-		
+
 		for (Drug Treatment:finalListOfTreatments){
 			System.out.print(Treatment.getDrugName());
 			for (String disease: Treatment.getDrugPatho()){
@@ -244,7 +203,7 @@ public class MediatorBis {
 
 	/**
 	 * 
-	 * Renvoie tous les medicaments pouvant causer les symptomes entrés (en gérant les "&" et les "," )
+	 * Get all the drugs corresponding to the symptom the user entered ("&" and "," are operational)
 	 * 
 	 * @param entry
 	 * @return
@@ -262,7 +221,7 @@ public class MediatorBis {
 		while(or.hasNext()){
 			listOfRequests.add(or.next());
 		}
-
+		or.close();
 		for(String request:listOfRequests){
 			System.err.println(request);
 		}
@@ -291,7 +250,7 @@ public class MediatorBis {
 			listOfSymptoms.remove(0);
 
 			for (String symptom:listOfSymptoms){
-				System.err.println("DANS LE FOR");
+				System.err.println("IN THE FOR LOOP");
 				soloSideEffect=symptom;
 				SideEffectsTemp=andJointDrug(listOfSideEffectsTemp,getSideEffects(soloSideEffect));
 				listOfSideEffectsTemp= new ArrayList<Drug>();
@@ -308,9 +267,9 @@ public class MediatorBis {
 			}
 		}
 
-		System.out.println("LISTE FINALE");
+		System.out.println("FINAL LIST");
 
-		
+
 		for (Drug SideEffect:finalListOfSideEffects){
 			System.out.print(SideEffect.getDrugName());
 			for (String dise: SideEffect.getDrugPatho()){
@@ -323,12 +282,12 @@ public class MediatorBis {
 
 		return finalListOfSideEffects;
 	}
-	
+
 	public static ArrayList<Drug> andJointDrug( ArrayList<Drug> listA, ArrayList<Drug> listB){
 		ArrayList<Drug> jointList = new ArrayList<Drug>();
-		
+
 		Drug drugTemp;
-		
+
 		for (Drug drugA : listA){
 			for(Drug drugB: listB){
 				if (drugA.getDrugName().equals(drugB.getDrugName())){
@@ -341,14 +300,14 @@ public class MediatorBis {
 		}
 		return jointList;
 	}
-	
+
 	public static ArrayList<Drug> orJointDrug(ArrayList<Drug> listA, ArrayList<Drug> listB) {
 		ArrayList<Drug> jointList=new ArrayList<Drug>();
-		
+
 		jointList.addAll(listA);
-		
+
 		boolean alreadyIn;
-		
+
 		for (Drug drugB:listB){
 			alreadyIn=false;
 			for (Drug drug : jointList){
@@ -362,7 +321,7 @@ public class MediatorBis {
 				jointList.add(drugB);
 			}
 		}
-		
+
 		return jointList;
 	}
 
@@ -385,24 +344,7 @@ public class MediatorBis {
 		Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
 		ArrayList<String>listOfOrphaDiseases = Orphaadap.clinicalSignToDisease(symptom);
 
-		/*Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
-		ArrayList<String>listOfOrphaDiseases=new ArrayList<String>();
-		ArrayList<String>orphadiseasesTemp;
-
-
-
-		for (String symptom:listOfSymptoms){
-			orphadiseasesTemp = Orphaadap.clinicalSignToDisease(symptom);
-			for (String orphadiseaseTemp:orphadiseasesTemp){
-				if (!listOfOrphaDiseases.contains(orphadiseaseTemp)){
-					listOfOrphaDiseases.add(orphadiseaseTemp);
-				}
-			}
-		}*/
-
-
-
-		System.out.println("Nombre d'orphadiseases: "+listOfOrphaDiseases.size());
+		System.out.println("OrphaDiseases Number: "+listOfOrphaDiseases.size());
 
 		//OMIM request
 		OMIM_Adaptator OMIMadap;
@@ -448,14 +390,7 @@ public class MediatorBis {
 
 		}
 
-
-		/*for (String disease: listOfDiseases){
-			System.out.println(disease);
-		}*/
-
 		return (listOfDiseases);
-
-
 
 	}
 
@@ -528,7 +463,7 @@ public class MediatorBis {
 
 	/**
 	 * 
-	 * renvoie les indications correspondant aux maladies entréess
+	 * Get all the indications corresponding to the diseases entered by the user
 	 * 
 	 * @param listOfDiseases
 	 * @return
@@ -539,28 +474,20 @@ public class MediatorBis {
 	 */
 	public static ArrayList<Drug> getIndications(Disease disease,Connection con) throws ClassNotFoundException, SQLException, IOException, ParseException{
 		ArrayList<String> Ids = new ArrayList<String>();
-		
-			
-			/*ArrayList<String> diseasesTemp=new ArrayList<String>();
-				diseasesTemp.add(disease);*/
-			ArrayList<String> IdsTemp = new ArrayList<String>();
-			//IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
-			IdsTemp = sider_Adaptator.getStitchID(disease.getDiseaseName(),con);
-			for (String id : IdsTemp){
-				if (!Ids.contains(id)){
-					Ids.add(id);
+
+		ArrayList<String> IdsTemp = new ArrayList<String>();
+		IdsTemp = sider_Adaptator.getStitchID(disease.getDiseaseName(),con);
+		for (String id : IdsTemp){
+			if (!Ids.contains(id)){
+				Ids.add(id);
 			}	
 		}
-		//System.out.println("Ids :"+Ids.size());
 
-		//Stitch_Adaptator Stitchadap = new Stitch_Adaptator();
 		ArrayList<String> IdsATC = Stitchadap.getId_Atc(Ids, true, true);
-		//System.out.println("IdsATC :"+IdsATC.size());
 
-		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfIndications = Atcadap.getLabel(IdsATC);
 		ArrayList<String> indicationListString = new ArrayList<String>();
-		
+
 		for (String drug: listOfIndications){
 			if (!indicationListString.contains(drug)){
 				indicationListString.add(drug);
@@ -572,7 +499,6 @@ public class MediatorBis {
 		for (String indication:indicationListString){
 			listOfIndicationsFinal.add(new Drug(indication, disease.getDiseaseName()));
 		}
-		//System.out.println("listOfIndicationsFinal: "+listOfIndicationsFinal.size());
 
 		return listOfIndicationsFinal;
 	}
@@ -580,13 +506,13 @@ public class MediatorBis {
 	public static ArrayList<Drug> getAllIndications (ArrayList<Disease> listOfDiseases) throws ClassNotFoundException, SQLException, IOException, ParseException {
 		Class.forName(driver);
 		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
-		
+
 		ArrayList<Drug> listOfDrug = new ArrayList<Drug>();
-		
+
 		for (Disease disease:listOfDiseases){
 			listOfDrug=orJointDrug(listOfDrug,getIndications(disease, con));
 		}
-		
+
 		for(Drug indication:listOfDrug){
 			System.out.print(indication.getDrugName());
 			for (String dise:indication.getDrugPatho()){
@@ -594,9 +520,9 @@ public class MediatorBis {
 			}
 			System.out.println();
 		}
-		
+
 		return listOfDrug;
-		
+
 	}
 
 	public static ArrayList<Drug> getTreatments(String symptom) throws ClassNotFoundException, SQLException, IOException, ParseException{
@@ -604,29 +530,25 @@ public class MediatorBis {
 		ArrayList<String> Ids = new ArrayList<String>();
 		Class.forName(driver);
 		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
-			//SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator(/*disease*/);
-			/*ArrayList<String> diseasesTemp=new ArrayList<String>();
-				diseasesTemp.add(disease);*/
-			ArrayList<String> IdsTemp = new ArrayList<String>();
-			//IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
-			IdsTemp = sider_Adaptator.getStitchID(symptom,con);
-			for (String id : IdsTemp){
-				if (!Ids.contains(id)){
-					Ids.add(id);
-				}
+
+		ArrayList<String> IdsTemp = new ArrayList<String>();
+
+		IdsTemp = sider_Adaptator.getStitchID(symptom,con);
+		for (String id : IdsTemp){
+			if (!Ids.contains(id)){
+				Ids.add(id);
+			}
 		}
 		System.out.println("Ids :"+Ids.size());
 
-		
 		ArrayList<String> IdsATC = Stitchadap.getId_Atc(Ids, true, true);
 		System.out.println("IdsATC :"+IdsATC.size());
 
-		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfTreatments = Atcadap.getLabel(IdsATC);
 		ArrayList<String> treatmentsStringList = new ArrayList<String>();
-		
+
 		ArrayList<Drug> finalListOfTreatments = new ArrayList<Drug>(); 
-		
+
 		for (String drug: listOfTreatments){
 			if (!treatmentsStringList.contains(drug))
 				treatmentsStringList.add(drug);
@@ -635,7 +557,6 @@ public class MediatorBis {
 		for (String drug: treatmentsStringList){
 			finalListOfTreatments.add(new Drug(drug, symptom));
 		}
-		//System.out.println("listOfTreatmentsFinal: "+listOfTreatmentsFinal.size());
 
 		return finalListOfTreatments;
 	}
@@ -646,29 +567,24 @@ public class MediatorBis {
 		ArrayList<String> SEIds = new ArrayList<String>();
 		Class.forName(driver);
 		Connection con=DriverManager.getConnection(db_server+database,login,pwd);
-			//SIDER_Adaptator sider_Adaptator = new SIDER_Adaptator(/*disease*/);
-			/*ArrayList<String> diseasesTemp=new ArrayList<String>();
-				diseasesTemp.add(disease);*/
-			ArrayList<String> IdsTemp = new ArrayList<String>();
-			//IdsTemp=sider_Adaptator.meddraConceptnameToId(diseasesTemp);
-			IdsTemp = sider_Adaptator.getStitchSEID(symptom,con);
-			for (String id : IdsTemp){
-				if (!SEIds.contains(id)){
-					SEIds.add(id);
-				}
+
+		ArrayList<String> IdsTemp = new ArrayList<String>();
+		IdsTemp = sider_Adaptator.getStitchSEID(symptom,con);
+		for (String id : IdsTemp){
+			if (!SEIds.contains(id)){
+				SEIds.add(id);
+			}
 		}
 		System.out.println("Ids :"+SEIds.size());
 
-		//Stitch_Adaptator Stitchadap = new Stitch_Adaptator();
 		ArrayList<String> IdsATC = Stitchadap.getId_Atc(SEIds, true, true);
 		System.out.println("IdsATC :"+IdsATC.size());
 
-		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfSideEffects = Atcadap.getLabel(IdsATC);
 		ArrayList<String> listOfSeString = new ArrayList<String>();
-		
+
 		ArrayList<Drug> finalListOfSideEffects = new ArrayList<Drug>(); 
-		
+
 		for (String drug: listOfSideEffects){
 			if (!listOfSeString.contains(drug)){
 				listOfSeString.add(drug);
@@ -684,9 +600,3 @@ public class MediatorBis {
 	}
 
 }
-
-
-
-
-
-
