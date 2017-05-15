@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.FocusTraversalPolicy;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,11 +8,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.omg.CORBA.PUBLIC_MEMBER;
-
-import com.sun.glass.ui.Size;
-import com.sun.org.apache.regexp.internal.recompile;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import Adaptators.Atc_Adaptator;
 import Adaptators.HP_Adaptator;
@@ -21,11 +15,8 @@ import Adaptators.OMIM_Adaptator;
 import Adaptators.Orphadata_Adaptator_final;
 import Adaptators.SIDER_Adaptator;
 import Adaptators.Stitch_Adaptator;
-import jdk.nashorn.internal.ir.RuntimeNode.Request;
 
 public class Mediator {
-
-	public static final String ANSI_PURPLE = "\u001B[35m";
 
 	static String host = "neptune.telecomnancy.univ-lorraine.fr";
 	static String db_server = "jdbc:mysql://" + host + ":3306/";
@@ -49,7 +40,7 @@ public class Mediator {
 
 		String entry=sc.nextLine();
 
-
+		getAllDiseases(entry);
 		//ArrayList<String> finalListOfDiseases= getDiseases(listOfSymptoms);
 		// Renvoie une liste de maladies (liste de symptomes en entrée)
 		

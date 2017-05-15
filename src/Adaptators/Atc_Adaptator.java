@@ -59,7 +59,7 @@ public class Atc_Adaptator {
 	 * Constructor of Atc's adaptator
 	 */
 	public Atc_Adaptator(){
-		CreateIndex("br08303.keg","index_atc");
+		CreateIndex("E:/IAMD/GMD/Projet/Projet/Données/atc/br08303.keg","index_atc");
 	}
 	
 	/**

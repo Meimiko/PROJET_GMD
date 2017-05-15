@@ -62,7 +62,7 @@ public class Stitch_Adaptator {
 	 * Constructor of Stitch's adaptator
 	 */
 	public Stitch_Adaptator(){
-		CreateIndex("C:/Users/Tagre/Perso/Telecom/GMD/Projet/Données/stitch/chemical.sources.v5.0.tsv","index_stitch");
+		CreateIndex("E:/IAMD/GMD/Projet/Projet/Données/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv","index_stitch");
 
 	}
 	
