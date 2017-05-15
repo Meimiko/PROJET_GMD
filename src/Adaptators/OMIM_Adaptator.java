@@ -157,7 +157,7 @@ public class OMIM_Adaptator {
 				  System.out.println(e.toString());
 			  }
 		  }
-		  System.out.println(eltcount + " elements ont été ajouté à l'index ");
+		  System.out.println(eltcount + " elements were had added to the index ");
 	  }
 
 	/**
@@ -241,7 +241,6 @@ public class OMIM_Adaptator {
 	    for (int j=0;j<signs.size();j++){
 		    String line = signs.get(j);
 	
-		    //line = line.trim();
 		    Query query = parser.parse(line);
 		    
 		    TopDocs results = searcher.search(query, 10000);
@@ -250,7 +249,6 @@ public class OMIM_Adaptator {
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	ids_omim.add(doc.get(getField));
-		    	//System.out.println(doc.get(getField));
 		    }
 	    }
 		return ids_omim;

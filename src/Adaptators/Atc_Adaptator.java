@@ -59,7 +59,7 @@ public class Atc_Adaptator {
 	 * Constructor of Atc's adaptator
 	 */
 	public Atc_Adaptator(){
-		CreateIndex("E:/IAMD/GMD/Projet/Projet/Donn馥s/atc/br08303.keg","index_atc");
+		CreateIndex("br08303.keg","index_atc");
 	}
 	
 	/**
@@ -122,26 +122,10 @@ public class Atc_Adaptator {
 	        iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 	      }
 
-	      // Optional: for better indexing performance, if you
-	      // are indexing many documents, increase the RAM
-	      // buffer.  But if you do this, increase the max heap
-	      // size to the JVM (eg add -Xmx512m or -Xmx1g):
-	      //
-	      // iwc.setRAMBufferSizeMB(256.0);
-
 	      IndexWriter writer = new IndexWriter(dir, iwc);
 	      
 	      //indexDocs(writer, docDir);
 	      indexDoc(writer, new File(docDir.toString()));
-	    	  
-
-	      // NOTE: if you want to maximize search performance,
-	      // you can optionally call forceMerge here.  This can be
-	      // a terribly costly operation, so generally it's only
-	      // worth it when your index is relatively static (ie
-	      // you're done adding documents to it):
-	      //
-	      // writer.forceMerge(1);
 
 	      writer.close();
 
@@ -187,7 +171,7 @@ public class Atc_Adaptator {
 				  System.out.println(e.toString());
 			  }
 		  }
-		  System.out.println(eltcount + " elements ont ﾃｩtﾃｩ ajoutﾃｩ ﾃ� l'index ");
+		  System.out.println(eltcount + " elements were had added to the index ");
 	  }
 	
 	 /**
@@ -213,13 +197,10 @@ public class Atc_Adaptator {
 		    Query query = parser.parse(line);
 		    
 		    TopDocs results = searcher.search(query, 1000);
-		    //System.out.println("Nombre de resultat :"+results.totalHits);
 		    ScoreDoc[] hits = results.scoreDocs;
 		    for (int i=0;i<results.totalHits;i++){
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	labels.add(doc.get("label"));
-		    	//System.out.println(doc.get("id_atc"));
-		    	//System.out.println(doc.get("label"));
 		    }
 	    }
 		return labels;

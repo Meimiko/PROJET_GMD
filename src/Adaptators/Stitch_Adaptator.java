@@ -71,71 +71,71 @@ public class Stitch_Adaptator {
 	 * @throws IOException
 	 */
 	public static void testReadStitch() throws IOException{
-		//lecture du fichier stitch
-				BufferedReader flotFiltre;
-				String filtre;
-				flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Donn�es/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv"));
-				filtre=flotFiltre.readLine();
-				BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testStitch1.tsv")));
-				int cmpt=0;
-				int cmpATC=0;
-				int cmpKEGG=0;
-				int cmpPC=0;
-				int cmpPS=0;
-				int cmpBD=0;
-				int cmpEBI=0;
-				int cmpEMBL=0;
-				for (int i=0;i<9;i++){
-					filtre=flotFiltre.readLine();
-					flot.write(filtre+"  "+cmpt+"\n");
-				}
-				while (filtre!=null/*&&cmpt<10000000*/){
-					Scanner scan=new Scanner(filtre);
-					scan.useDelimiter("	");
-					scan.next();
-					scan.next();
-					String buff=scan.next();
-					if (buff.equals("PC")){
-						if(cmpPC<100000){flot.write(filtre+"  "+cmpt+"\n");}
-						cmpPC++;
-					} else if(buff.equals("PS")){
-						if(cmpPS<100000){flot.write(filtre+"  "+cmpt+"\n");}
-						cmpPS++;
-					}else if(buff.equals("KEGG")){
-						flot.write(filtre+"  "+cmpt+"\n");
-						cmpKEGG++;
-					}else if(buff.equals("BindingDB")){
-						if(cmpBD<100000){flot.write(filtre+"  "+cmpt+"\n");}
-						cmpBD++;
-					}else if(buff.equals("ChEBI")){
-						if(cmpEBI<100000){flot.write(filtre+"  "+cmpt+"\n");}
-						cmpEBI++;
-					}else if(buff.equals("ChEMBL")){
-						if(cmpEMBL<100000){flot.write(filtre+"  "+cmpt+"\n");}
-						cmpEMBL++;
-					}else if(buff.equals("ATC")){
-						flot.write(filtre+"  "+cmpt+"\n");
-						cmpATC++;
-					}
-						
-						
-					filtre=flotFiltre.readLine();
-					cmpt++;
-					scan.close();
-					if (cmpt%10000000==0)
-						System.out.println(cmpt);
-				}
+
+		BufferedReader flotFiltre;
+		String filtre;
+		flotFiltre = new BufferedReader(new FileReader("E:/IAMD/GMD/Projet/Projet/Donn�es/stitch/chemical.sources.v5.0.tsv.7z/chemical.sources.v5.0.tsv"));
+		filtre=flotFiltre.readLine();
+		BufferedWriter flot = new BufferedWriter(new FileWriter(new File("src/" +"testStitch1.tsv")));
+		int cmpt=0;
+		int cmpATC=0;
+		int cmpKEGG=0;
+		int cmpPC=0;
+		int cmpPS=0;
+		int cmpBD=0;
+		int cmpEBI=0;
+		int cmpEMBL=0;
+		for (int i=0;i<9;i++){
+			filtre=flotFiltre.readLine();
+			flot.write(filtre+"  "+cmpt+"\n");
+		}
+		while (filtre!=null){
+			Scanner scan=new Scanner(filtre);
+			scan.useDelimiter("	");
+			scan.next();
+			scan.next();
+			String buff=scan.next();
+			if (buff.equals("PC")){
+				if(cmpPC<100000){flot.write(filtre+"  "+cmpt+"\n");}
+				cmpPC++;
+			} else if(buff.equals("PS")){
+				if(cmpPS<100000){flot.write(filtre+"  "+cmpt+"\n");}
+				cmpPS++;
+			}else if(buff.equals("KEGG")){
+				flot.write(filtre+"  "+cmpt+"\n");
+				cmpKEGG++;
+			}else if(buff.equals("BindingDB")){
+				if(cmpBD<100000){flot.write(filtre+"  "+cmpt+"\n");}
+				cmpBD++;
+			}else if(buff.equals("ChEBI")){
+				if(cmpEBI<100000){flot.write(filtre+"  "+cmpt+"\n");}
+				cmpEBI++;
+			}else if(buff.equals("ChEMBL")){
+				if(cmpEMBL<100000){flot.write(filtre+"  "+cmpt+"\n");}
+				cmpEMBL++;
+			}else if(buff.equals("ATC")){
+				flot.write(filtre+"  "+cmpt+"\n");
+				cmpATC++;
+			}
+
+
+			filtre=flotFiltre.readLine();
+			cmpt++;
+			scan.close();
+			if (cmpt%10000000==0)
 				System.out.println(cmpt);
-				System.out.println(cmpATC);
-				System.out.println(cmpKEGG);
-				System.out.println(cmpBD);
-				System.out.println(cmpEBI);
-				System.out.println(cmpEMBL);
-				System.out.println(cmpKEGG);
-				System.out.println(cmpPC);
-				System.out.println(cmpPS);
-				flot.close();
-				flotFiltre.close();
+		}
+		System.out.println(cmpt);
+		System.out.println(cmpATC);
+		System.out.println(cmpKEGG);
+		System.out.println(cmpBD);
+		System.out.println(cmpEBI);
+		System.out.println(cmpEMBL);
+		System.out.println(cmpKEGG);
+		System.out.println(cmpPC);
+		System.out.println(cmpPS);
+		flot.close();
+		flotFiltre.close();
 	}
 	
 	
@@ -229,7 +229,7 @@ public class Stitch_Adaptator {
 				  System.out.println(e.toString());
 			  }
 		  }
-		//  System.out.println(eltcount + " elements ont été ajouté à l'index ");
+		  System.out.println(eltcount + " elements were had added to the index ");
 	  }
 	
 	/**
