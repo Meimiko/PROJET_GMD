@@ -59,7 +59,7 @@ public class MediatorBis {
 		/*ArrayList<Disease> allDiseases = getAllDiseases(entry);
 		getAllIndications(allDiseases);*/
 		
-		getAllSideEffects(entry);
+		getAllTreatments(entry);
 		
 		//ArrayList<String> finalListOfDiseases= getDiseases(listOfSymptoms);
 		// Renvoie une liste de maladies (liste de symptomes en entrée)
@@ -227,12 +227,16 @@ public class MediatorBis {
 
 		System.out.println("LISTE FINALE");
 
-		/*
+		
 		for (Drug Treatment:finalListOfTreatments){
-			System.out.println(Treatment.getDrugName());
+			System.out.print(Treatment.getDrugName());
+			for (String disease: Treatment.getDrugPatho()){
+				System.out.print(" ; "+ disease);
+			}
+			System.out.println();
 		}
 
-		System.out.println(finalListOfTreatments.size());*/
+		System.out.println(finalListOfTreatments.size());
 
 		return finalListOfTreatments;
 	}
@@ -309,6 +313,10 @@ public class MediatorBis {
 		
 		for (Drug SideEffect:finalListOfSideEffects){
 			System.out.print(SideEffect.getDrugName());
+			for (String dise: SideEffect.getDrugPatho()){
+				System.out.print(" ; "+ dise);
+			}
+			System.out.println();
 		}
 
 		System.out.println(finalListOfSideEffects.size());
@@ -551,10 +559,17 @@ public class MediatorBis {
 
 		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfIndications = Atcadap.getLabel(IdsATC);
+		ArrayList<String> indicationListString = new ArrayList<String>();
+		
+		for (String drug: listOfIndications){
+			if (!indicationListString.contains(drug)){
+				indicationListString.add(drug);
+			}
+		}
 
 		ArrayList<Drug> listOfIndicationsFinal = new ArrayList<Drug>();
 
-		for (String indication:listOfIndications){
+		for (String indication:indicationListString){
 			listOfIndicationsFinal.add(new Drug(indication, disease.getDiseaseName()));
 		}
 		//System.out.println("listOfIndicationsFinal: "+listOfIndicationsFinal.size());
@@ -608,10 +623,16 @@ public class MediatorBis {
 
 		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfTreatments = Atcadap.getLabel(IdsATC);
-
+		ArrayList<String> treatmentsStringList = new ArrayList<String>();
+		
 		ArrayList<Drug> finalListOfTreatments = new ArrayList<Drug>(); 
-
+		
 		for (String drug: listOfTreatments){
+			if (!treatmentsStringList.contains(drug))
+				treatmentsStringList.add(drug);
+		}
+
+		for (String drug: treatmentsStringList){
 			finalListOfTreatments.add(new Drug(drug, symptom));
 		}
 		//System.out.println("listOfTreatmentsFinal: "+listOfTreatmentsFinal.size());
@@ -644,13 +665,20 @@ public class MediatorBis {
 
 		//Atc_Adaptator Atcadap = new Atc_Adaptator();
 		ArrayList<String> listOfSideEffects = Atcadap.getLabel(IdsATC);
-
+		ArrayList<String> listOfSeString = new ArrayList<String>();
+		
 		ArrayList<Drug> finalListOfSideEffects = new ArrayList<Drug>(); 
-
+		
 		for (String drug: listOfSideEffects){
-			finalListOfSideEffects.add(new Drug(drug, symptom));
+			if (!listOfSeString.contains(drug)){
+				listOfSeString.add(drug);
+			}
 		}
-		//System.out.println("listOfSideEffectsFinal: "+listOfSideEffectsFinal.size());
+
+		for (String drugg: listOfSeString){
+			finalListOfSideEffects.add(new Drug(drugg, symptom));
+		}
+		System.out.println("listOfSideEffectsFinal: "+finalListOfSideEffects.size());
 
 		return finalListOfSideEffects;
 	}

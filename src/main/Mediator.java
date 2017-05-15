@@ -40,10 +40,11 @@ public class Mediator {
 
 		String entry=sc.nextLine();
 
-		getAllDiseases(entry);
+		//getAllDiseases(entry);
 		//ArrayList<String> finalListOfDiseases= getDiseases(listOfSymptoms);
 		// Renvoie une liste de maladies (liste de symptomes en entrée)
 		
+		getAllTreatments(entry);
 		
 		//ArrayList<String> listOfIndications = getIndications(finalListOfDiseases);
 		// Renvoie une liste de médicaments pour les maladies (liste de maladies en entrée)
