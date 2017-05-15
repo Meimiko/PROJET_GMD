@@ -140,7 +140,7 @@ public class OMIM_Adaptator {
 						  doc.add(new TextField("id_omim", line,Field.Store.YES));//à changer pour ne pas l'indexer
 					  } else if (line.startsWith("*FIELD* TI")){
 						  line=br.readLine();
-						  doc.add(new TextField("name/synonyms",line.substring(line.indexOf(" ")), Field.Store.YES));
+						  doc.add(new TextField("name/synonyms",line.substring(line.indexOf(" ")+1), Field.Store.YES));
 					  } else if (line.startsWith("*FIELD* CS")){
 						  line=br.readLine();
 						  String content=line;
