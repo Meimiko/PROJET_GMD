@@ -42,7 +42,7 @@ public class MediatorBis {
 		Scanner sc;
 		sc = new Scanner(System.in);
 		String entry=sc.nextLine();	
-		getAllDiseases(entry);
+		getAllTreatments(entry);
 		sc.close();
 	}
 
@@ -196,6 +196,7 @@ public class MediatorBis {
 		}
 
 		System.out.println(finalListOfTreatments.size());
+		//sortDrugList(finalListOfTreatments);
 
 		return finalListOfTreatments;
 	}
@@ -280,6 +281,8 @@ public class MediatorBis {
 
 		System.out.println(finalListOfSideEffects.size());
 
+		//sortDrugList(finalListOfSideEffects);
+		
 		return finalListOfSideEffects;
 	}
 
@@ -312,7 +315,12 @@ public class MediatorBis {
 			alreadyIn=false;
 			for (Drug drug : jointList){
 				if (drug.getDrugName().equals(drugB.getDrugName())){
-					drug.addDrugPatho(drugB.getDrugPatho().get(0));
+					for (String drugPathoB:drugB.getDrugPatho()){
+							if (!drug.getDrugPatho().contains(drugPathoB)){
+								drug.addDrugPatho(drugPathoB);
+							}
+					}
+					//drug.addDrugPatho(drugB.getDrugPatho().get(0));
 					alreadyIn=true;
 					break;
 				}
@@ -495,7 +503,7 @@ public class MediatorBis {
 		}
 
 		ArrayList<Drug> listOfIndicationsFinal = new ArrayList<Drug>();
-
+		
 		for (String indication:indicationListString){
 			listOfIndicationsFinal.add(new Drug(indication, disease.getDiseaseName()));
 		}
@@ -520,6 +528,8 @@ public class MediatorBis {
 			}
 			System.out.println();
 		}
+		
+		//sortDrugList(listOfDrug);
 
 		return listOfDrug;
 
@@ -561,6 +571,23 @@ public class MediatorBis {
 		return finalListOfTreatments;
 	}
 
+	
+	public static void sortDrugList(ArrayList<Drug> listOfDrug) {
+		Drug drugi;
+		Drug drugj;
+		
+		for (int i=0;i<listOfDrug.size();i++){
+			drugi=listOfDrug.get(i);
+			for(int j = 0 ; j<i; j++){
+				drugj=listOfDrug.get(j);
+				if (drugj.getDrugPatho().size()<drugi.getDrugPatho().size()){
+					listOfDrug.set(i, drugj);
+					drugj=drugi;
+					listOfDrug.set(j, drugj);
+				}
+			}
+		}
+	}
 
 	public static ArrayList<Drug> getSideEffects(String symptom) throws ClassNotFoundException, SQLException, IOException, ParseException {
 
