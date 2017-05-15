@@ -42,7 +42,7 @@ public class MediatorBis {
 		Scanner sc;
 		sc = new Scanner(System.in);
 		String entry=sc.nextLine();	
-		getAllTreatments(entry);
+		getAllDiseases(entry);
 		sc.close();
 	}
 
@@ -342,7 +342,7 @@ public class MediatorBis {
 		//Orphadatabase request
 
 		Orphadata_Adaptator_final Orphaadap = new Orphadata_Adaptator_final();
-		ArrayList<String>listOfOrphaDiseases = Orphaadap.clinicalSignToDisease(symptom);
+		ArrayList<String>listOfOrphaDiseases = Orphaadap.Orpharequest(symptom);
 
 		System.out.println("OrphaDiseases Number: "+listOfOrphaDiseases.size());
 

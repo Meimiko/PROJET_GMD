@@ -241,7 +241,7 @@ public class OMIM_Adaptator {
 	    for (int j=0;j<signs.size();j++){
 		    String line = signs.get(j);
 	
-		    Query query = parser.parse(line);
+		    Query query = parser.parse("\""+line+"\"");
 		    
 		    TopDocs results = searcher.search(query, 10000);
 		    System.out.println("Nombre de resultat :"+results.totalHits +" pour l'entrée :"+query);

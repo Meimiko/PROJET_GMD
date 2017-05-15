@@ -43,6 +43,17 @@ public class Orphadata_Adaptator_final {
 	public Orphadata_Adaptator_final() throws Exception {
 		//CreateIndex("http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/getAllCS", "index_stitch");
 	}
+	
+	
+	public ArrayList<String> Orpharequest(String request) throws Exception {
+		if (request.contains("*")){
+			System.out.println(" ETOILE FIN ");
+			return etoileFin(request);
+		}
+		else{
+			return clinicalSignToDisease(request);
+		}
+	}
 
 	/**
 	 * 
@@ -215,32 +226,48 @@ public class Orphadata_Adaptator_final {
         String url = "http://couchdb.telecomnancy.univ-lorraine.fr/orphadatabase/_design/clinicalsigns/_view/GetDiseaseByClinicalSign?startkey=";
         String endUrl = "&endkey=";
         
-        char firstLetter =clinicalSign.charAt(0);
-		int asciiFL = firstLetter;
-		if(asciiFL>96){
-			asciiFL=asciiFL-32;
-		}
-		firstLetter=(char) asciiFL;
-		System.err.println("NOM PAS CORRIGE"+ clinicalSign);
-		clinicalSign=firstLetter+clinicalSign.substring(1);
-		System.out.println("NOM CORRIGE :"+ clinicalSign);
-		
-		clinicalSign="%22"+clinicalSign+"%22";
-		clinicalSign=clinicalSign.replaceAll(" ", "%20");
-		clinicalSign=clinicalSign.replaceAll("/", "%2F");
-		
-		String startKey=clinicalSign.substring(0, clinicalSign.length()-1);
-		
+        String startKey=clinicalSign.substring(0, clinicalSign.length()-1);
+	
 		char lastLetter = startKey.charAt(startKey.length()-1);
 		int asciiLl = lastLetter;
 		if (asciiLl!=122){
 			asciiLl++;
 		}
 		lastLetter= (char) asciiLl;
+		//System.out.println(lastLetter);
 		
 		String endKey = startKey.substring(0, startKey.length()-1)+lastLetter;
 		
-		url=url+clinicalSign+startKey+endUrl+endKey;
+		char firstLetter =startKey.charAt(0);
+		int asciiFL = firstLetter;
+		if(asciiFL>96){
+			asciiFL=asciiFL-32;
+		}
+		firstLetter=(char) asciiFL;
+		System.err.println("NOM PAS CORRIGE"+ startKey);
+		startKey=firstLetter+startKey.substring(1);
+		System.out.println("NOM CORRIGE :"+ startKey);
+		
+		startKey="%22"+startKey+"%22";
+		startKey=startKey.replaceAll(" ", "%20");
+		startKey=startKey.replaceAll("/", "%2F");
+		
+		
+		firstLetter =endKey.charAt(0);
+		asciiFL = firstLetter;
+		if(asciiFL>96){
+			asciiFL=asciiFL-32;
+		}
+		firstLetter=(char) asciiFL;
+		System.err.println("NOM PAS CORRIGE"+ endKey);
+		endKey=firstLetter+endKey.substring(1);
+		System.out.println("NOM CORRIGE :"+ endKey);
+		
+		endKey="%22"+endKey+"%22";
+		endKey=endKey.replaceAll(" ", "%20");
+		endKey=endKey.replaceAll("/", "%2F");
+		
+		url=url+startKey+endUrl+endKey;
         
 		obj=sendGet(url);
 		
