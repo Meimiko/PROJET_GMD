@@ -197,12 +197,14 @@ public class HP_Adaptator {
 			    	Query synonymQuery = synonymParser.parse(name);
 			    	TopDocs synonymresults = searcher.search(synonymQuery, 1000);
 			    	ScoreDoc[] synonymHits = synonymresults.scoreDocs;
-			    	Document synonymdoc = searcher.doc(synonymHits[0].doc);
-			    	String[] syno = synonymdoc.get("synonyms").split(";");
-			    	for (int i=0;i<syno.length;i++){
-			    		HpoboName.add(syno[i]);
+			    	if (synonymHits.length>0){
+			    		Document synonymdoc = searcher.doc(synonymHits[0].doc);
+			    		String[] syno = synonymdoc.get("synonyms").split(";");
+			    		for (int i=0;i<syno.length;i++){
+			    			HpoboName.add(syno[i]);
+			    		}
+			    		System.out.println("Synonyms found for "+HpoboName.get(j)+" : "+synonymdoc.get("synonyms"));
 			    	}
-			    	System.out.println("Synonyms found for "+HpoboName.get(j)+" : "+synonymdoc.get("synonyms"));
 			    }
 			    
 			    	
